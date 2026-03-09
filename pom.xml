@@ -10,11 +10,11 @@
     </parent>
 
     <groupId>click.repwrite</groupId>
-    <artifactId>roster-portal-java</artifactId>
+    <artifactId>rep-write</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Roster Portal Java</name>
+    <name>RepWrite</name>
 
     <properties>
         <java.version>21</java.version>

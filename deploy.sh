@@ -4,13 +4,10 @@
 set -e
 
 # --- Configuration ---
-S3_BUCKET="rosterportal"
-LOCAL_JAR_PATH="target/roster-portal-java-1.0.0-SNAPSHOT.jar"
+S3_BUCKET="repwrite"
+LOCAL_JAR_PATH="target/rep-write-1.0.0-SNAPSHOT.jar"
 REMOTE_JAR_NAME="app.jar"
 ASG_NAME="rw-stack-InstanceSecurityGroup-mWMYoNZunzeG"
-
-echo "Generating mkdocs documentation..."
-mkdocs build --strict -d src/main/resources/static/docs
 
 # 1. Build the application using Maven
 echo "Building the application with Maven..."

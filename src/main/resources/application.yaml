@@ -1,6 +1,6 @@
 spring:
   application:
-    name: roster-portal-java
+    name: rep-write
   thymeleaf:
     cache: false
 
