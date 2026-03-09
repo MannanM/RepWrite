@@ -298,7 +298,7 @@ Resources:
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
               StringLike:
-                'token.actions.githubusercontent.com:sub': !Sub 'repo:${GitHubOrg}/${GitHubRepo}:ref:refs/heads/master'
+                'token.actions.githubusercontent.com:sub': !Sub 'repo:${GitHubOrg}/${GitHubRepo}:ref:refs/heads/main'
       Policies:
         - PolicyName: S3AndAutoScalingPolicy
           PolicyDocument:

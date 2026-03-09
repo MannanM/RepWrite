@@ -7,7 +7,7 @@ set -e
 S3_BUCKET="rosterportal"
 LOCAL_JAR_PATH="target/roster-portal-java-1.0.0-SNAPSHOT.jar"
 REMOTE_JAR_NAME="app.jar"
-ASG_NAME="RP-Stack-JavaAppAutoScalingGroup-6XHils4znK61"
+ASG_NAME="rw-stack-InstanceSecurityGroup-mWMYoNZunzeG"
 
 echo "Generating mkdocs documentation..."
 mkdocs build --strict -d src/main/resources/static/docs
