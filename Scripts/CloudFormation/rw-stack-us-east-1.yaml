@@ -1,0 +1,25 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  RwProdDns:
+    Type: String
+    Description: repwrite.click Hosted Zone ID
+    Default: Z03746511O0O00Z5LO7QS
+
+Resources:
+  RwProdCertificate:
+   Type: AWS::CertificateManager::Certificate
+   Properties:
+      DomainName: "repwrite.click"
+      SubjectAlternativeNames:
+        - "*.repwrite.click"
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: "repwrite.click"
+          HostedZoneId: !Ref RwProdDns
+      Tags:
+        - Key: App
+          Value: RepWrite
+        - Key: Layer
+          Value: domain
