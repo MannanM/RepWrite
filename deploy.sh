@@ -7,7 +7,7 @@ set -e
 S3_BUCKET="repwrite"
 LOCAL_JAR_PATH="target/rep-write-1.0.0-SNAPSHOT.jar"
 REMOTE_JAR_NAME="app.jar"
-ASG_NAME="rw-stack-InstanceSecurityGroup-mWMYoNZunzeG"
+ASG_NAME="rw-java-app-asg"
 
 # 1. Build the application using Maven
 echo "Building the application with Maven..."

@@ -191,7 +191,7 @@ Resources:
   JavaAppAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      AutoScalingGroupName: rw-java-app-asg # Fixed name for your bash script
+      AutoScalingGroupName: rw-java-app-asg
       MinSize: '1'
       MaxSize: '1'
       DesiredCapacity: '1'
