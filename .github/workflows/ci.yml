@@ -8,8 +8,6 @@ on:
     branches: [ '**' ] # Triggers the workflow on pull requests to any branch
     # The workflow will NOT run if the only changes are in these paths
     paths-ignore:
-      - 'docs/**'      # Ignores all changes inside the docs folder (including .md files)
-      - 'mkdocs.yml'   # Ignores changes to the mkdocs configuration file
       - '.github/dependabot.yml'  # Ignores changes to the dependabot configuration file
       - '.github/workflows/deploy.yml' # Ignores changes to the deployment workflow
 
