@@ -6,10 +6,9 @@ name: Deploy to AWS on merge to master
 on:
   push:
     branches:
-      - master
+      - main
     paths-ignore:
       - '.github/**'
-      - 'Pages/**'
       - 'Scripts/**'
 
 concurrency:
@@ -34,14 +33,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.x'
-
-      - name: Install MkDocs and Material Theme
-        run: pip install mkdocs mkdocs-material
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
