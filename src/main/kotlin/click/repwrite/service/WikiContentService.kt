@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 
 @Service
 class WikiContentService(restTemplateBuilder: RestTemplateBuilder) {
@@ -24,7 +25,7 @@ class WikiContentService(restTemplateBuilder: RestTemplateBuilder) {
         return try {
             logger.info("Fetching content from Wikipedia: $url")
             val html = restTemplate
-                .exchange(url, HttpMethod.GET, HttpEntity<Void>(headers), String::class.java)
+                .exchange(URI.create(url), HttpMethod.GET, HttpEntity<Void>(headers), String::class.java)
                 .body
             if (html != null) {
                 val doc = Jsoup.parse(html)

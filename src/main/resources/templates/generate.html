@@ -422,7 +422,8 @@
 
         async function loadCauses() {
             try {
-                const res = await fetch('/api/causes?status=active');
+                const today = new Date().toISOString().split('T')[0];
+                const res = await fetch(`/api/causes?status=active&_date=${today}`);
                 if (res.ok) {
                     const causes = await res.json();
                     causesDropdown.innerHTML = '<option value="">-- Select a Political Cause --</option>';
@@ -450,7 +451,8 @@
             }
 
             try {
-                const res = await fetch(`/api/causes/${causeId}`);
+                const today = new Date().toISOString().split('T')[0];
+                const res = await fetch(`/api/causes/${causeId}?_date=${today}`);
                 if (res.ok) {
                     const cause = await res.json();
                     causeContent.textContent = cause.content;
@@ -530,7 +532,8 @@
                 return;
             }
             try {
-                const res = await fetch(`/api/postcodes/${postcode}/senators`);
+                const today = new Date().toISOString().split('T')[0];
+                const res = await fetch(`/api/postcodes/${postcode}/senators?_date=${today}`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.length > 0) {
@@ -555,7 +558,8 @@
                 return;
             }
             try {
-                const res = await fetch(`/api/states/${state}/senators`);
+                const today = new Date().toISOString().split('T')[0];
+                const res = await fetch(`/api/states/${state}/senators?_date=${today}`);
                 if (res.ok) {
                     const data = await res.json();
                     updateSenators(data, state);
