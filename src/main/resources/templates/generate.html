@@ -200,6 +200,7 @@
         .party-greens { background-color: #009c42; }
         .party-national { background-color: #006944; }
         .party-independent { background-color: #555; }
+        .party-onenation { background-color: #F36D24; }
         .party-other { background-color: #888; }
 
         button {
@@ -238,6 +239,24 @@
             gap: 12px;
             flex-wrap: wrap;
             margin-top: 16px;
+        }
+
+        .copy-btn-inline {
+            background: none;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            margin-left: 8px;
+            cursor: pointer;
+            width: auto;
+            display: inline-flex;
+            vertical-align: middle;
+        }
+
+        .copy-btn-inline:hover {
+            background: rgba(13, 71, 161, 0.1);
         }
 
         .hidden { display: none !important; }
@@ -361,8 +380,14 @@
     <!-- Email Output -->
     <div style="margin-bottom: 30px;">
         <h4 style="color: var(--primary-color);">✉️ Email to Senator</h4>
-        <p style="margin: 4px 0;"><strong>To:</strong> <span id="emailTo"></span></p>
-        <p style="margin: 4px 0 12px 0;"><strong>Subject:</strong> <span id="emailSubject"></span></p>
+        <p style="margin: 4px 0;">
+            <strong>To:</strong> <span id="emailTo"></span>
+            <button id="copyToBtn" class="copy-btn-inline">Copy</button>
+        </p>
+        <p style="margin: 4px 0 12px 0;">
+            <strong>Subject:</strong> <span id="emailSubject"></span>
+            <button id="copySubjectBtn" class="copy-btn-inline">Copy</button>
+        </p>
         <div id="emailBody" class="output-box output-email"></div>
         <div class="action-group">
             <button id="sendEmailBtn" class="btn-success">Open in Mail App</button>
@@ -503,6 +528,7 @@
                 else if (partyClass.includes('greens')) badgeClass = 'party-greens';
                 else if (partyClass.includes('national')) badgeClass = 'party-national';
                 else if (partyClass.includes('independent')) badgeClass = 'party-independent';
+                else if (partyClass.includes('one nation')) badgeClass = 'party-onenation';
 
                 const card = document.createElement('div');
                 card.className = 'senator-card-item';
@@ -601,6 +627,9 @@
             submitEmailBtn.innerHTML = '⏳ Generating Appeal...';
             submitEmailBtn.disabled = true;
 
+            // Hide existing results during generation
+            emailResultSection.classList.add('hidden');
+
             try {
                 const res = await fetch(`/api/causes/${causeId}/generate-email`, {
                     method: 'POST',
@@ -660,6 +689,14 @@
 
         document.getElementById('copyPhoneBtn').addEventListener('click', (e) => {
             copyText('phoneLineContent', e.target, 'Copy Script');
+        });
+
+        document.getElementById('copyToBtn').addEventListener('click', (e) => {
+            copyText('emailTo', e.target, 'Copy');
+        });
+
+        document.getElementById('copySubjectBtn').addEventListener('click', (e) => {
+            copyText('emailSubject', e.target, 'Copy');
         });
 
         // Init

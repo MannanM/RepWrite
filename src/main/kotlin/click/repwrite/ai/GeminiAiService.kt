@@ -104,7 +104,7 @@ class GeminiAiService(
                 Return ONLY a valid, raw JSON object. Use the exact structure below:
                 {
                         "subject": "A compelling, natural subject line (avoid generic 'A concerned citizen' titles)",
-                        "body": "The full email, 2-3 paragraphs, including a respectful salutation and sign-off",
+                        "body": "The full email, maximum 2-3 paragraphs, including a respectful salutation and sign-off",
                         "tweet": "The short tweet content",
                         "phoneLine": "The two-sentence phone script"
                 }
