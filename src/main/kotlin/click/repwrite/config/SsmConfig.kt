@@ -4,17 +4,17 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
+import software.amazon.awssdk.services.ssm.SsmClient
 
 @Configuration
-class SecretsManagerConfig {
+class SsmConfig {
 
-    @Value("\${aws.secrets-manager.region}")
+    @Value("\${aws.ssm.region}")
     lateinit var region: String
 
     @Bean
-    fun secretsManagerClient(): SecretsManagerClient =
-        SecretsManagerClient.builder()
+    fun ssmClient(): SsmClient =
+        SsmClient.builder()
             .region(Region.of(region))
             .build()
 }

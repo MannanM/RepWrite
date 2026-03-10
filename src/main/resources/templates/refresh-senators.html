@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>RepWrite - Refresh Senators</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.description {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        #controls {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background-color: var(--border);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #progress-container {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.75rem;
+            background: var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #6366f1, #a855f7);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #log {
+            margin-top: 2rem;
+            background: #000;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            border-left: 3px solid transparent;
+            padding-left: 0.75rem;
+        }
+
+        .log-entry.info { border-color: var(--primary); color: var(--text); }
+        .log-entry.success { border-color: var(--success); color: var(--success); }
+        .log-entry.error { border-color: var(--error); color: var(--error); }
+        .log-entry.waiting { border-color: var(--text-muted); color: var(--text-muted); }
+
+        .status-text {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Senator Refresh</h1>
+        <p class="description">Sequentially enrich senator background data from Wikipedia. Includes a 5-second delay between requests to be respectful of resources.</p>
+        
+        <div id="controls">
+            <input type="password" id="admin-pass" placeholder="Admin Password" style="padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+            <button id="start-btn">Start Refresh Process</button>
+            <span id="stat-summary" style="display: none; color: var(--text-muted);"></span>
+        </div>
+
+        <div id="progress-container">
+            <span id="current-status" class="status-text">Ready to start...</span>
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const startBtn = document.getElementById('start-btn');
+        const adminPassInput = document.getElementById('admin-pass');
+        const progressContainer = document.getElementById('progress-container');
+        const progressFill = document.getElementById('progress-fill');
+        const currentStatus = document.getElementById('current-status');
+        const log = document.getElementById('log');
+        const statSummary = document.getElementById('stat-summary');
+
+        let senators = [];
+        let currentIndex = 0;
+        let successCount = 0;
+        let failCount = 0;
+
+        function addLog(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function fetchSenators() {
+            try {
+                addLog('Fetching list of all senators...');
+                const response = await fetch('/api/senators');
+                if (!response.ok) throw new Error('Failed to fetch senators');
+                const rawSenators = await response.json();
+                
+                // Prioritize senators with no background
+                senators = rawSenators.sort((a, b) => {
+                    const aHasBg = a.background && a.background.trim().length > 0;
+                    const bHasBg = b.background && b.background.trim().length > 0;
+                    if (!aHasBg && bHasBg) return -1;
+                    if (aHasBg && !bHasBg) return 1;
+                    return a.name.localeCompare(b.name);
+                });
+
+                addLog(`Found ${senators.length} senators. ${senators.filter(s => !s.background).length} have no background data.`);
+                return true;
+            } catch (err) {
+                addLog(`Error: ${err.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function refreshSenator(senator) {
+            try {
+                addLog(`Refreshing ${senator.name} (${senator.id})...`, 'info');
+                const password = adminPassInput.value;
+                const authHeader = 'Basic ' + btoa('admin:' + password);
+                
+                const response = await fetch(`/api/senators/${senator.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': authHeader
+                    }
+                });
+                if (response.ok) {
+                    addLog(`Successfully refreshed ${senator.name}.`, 'success');
+                    successCount++;
+                } else if (response.status === 401) {
+                    addLog(`Unauthorized: Incorrect admin password for ${senator.name}.`, 'error');
+                    throw new Error('Unauthorized');
+                } else {
+                    const errorText = await response.text();
+                    addLog(`Failed to refresh ${senator.name}: ${response.status} ${errorText}`, 'error');
+                    failCount++;
+                }
+            } catch (err) {
+                addLog(`Network error refreshing ${senator.name}: ${err.message}`, 'error');
+                failCount++;
+            }
+        }
+
+        async function processNext() {
+            if (currentIndex >= senators.length) {
+                currentStatus.textContent = 'Process Completed!';
+                addLog('--- All senators processed ---', 'info');
+                startBtn.disabled = false;
+                startBtn.textContent = 'Restart Process';
+                return;
+            }
+
+            const senator = senators[currentIndex];
+            const percent = ((currentIndex + 1) / senators.length) * 100;
+            
+            progressFill.style.width = `${percent}%`;
+            currentStatus.textContent = `Processing ${currentIndex + 1} of ${senators.length}: ${senator.name}`;
+            
+            await refreshSenator(senator);
+            
+            currentIndex++;
+            statSummary.textContent = `Success: ${successCount} | Failed: ${failCount}`;
+
+            if (currentIndex < senators.length) {
+                addLog('Waiting 5 seconds...', 'waiting');
+                setTimeout(processNext, 5000);
+            } else {
+                processNext();
+            }
+        }
+
+        startBtn.addEventListener('click', async () => {
+            startBtn.disabled = true;
+            progressContainer.style.display = 'block';
+            statSummary.style.display = 'inline';
+            log.innerHTML = '';
+            currentIndex = 0;
+            successCount = 0;
+            failCount = 0;
+            statSummary.textContent = 'Preparing...';
+
+            const ready = await fetchSenators();
+            if (ready && senators.length > 0) {
+                processNext();
+            } else if (ready) {
+                addLog('No senators found in database.', 'error');
+                startBtn.disabled = false;
+            } else {
+                startBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

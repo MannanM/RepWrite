@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RepWrite - Political Causes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d47a1;
+            --primary-hover: #1565c0;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --focus-ring: rgba(13, 71, 161, 0.2);
+            --success-color: #10b981;
+            --twitter-color: #1da1f2;
+            --phone-color: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            background-color: var(--bg-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .header-top h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header-top a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(13, 71, 161, 0.1);
+            transition: background 0.2s;
+        }
+
+        .header-top a:hover {
+            background: rgba(13, 71, 161, 0.2);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+        }
+
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .helper-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            background-color: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--focus-ring);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cause-content {
+            background: #f0f4f8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        /* Senator Cards (Replacing Table for Mobile) */
+        .senator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .senator-card-item {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            background: #fff;
+        }
+
+        .senator-card-item:hover {
+            border-color: #93c5fd;
+            background: #eff6ff;
+        }
+
+        .senator-card-item.selected {
+            border-color: var(--primary-color);
+            background: #eff6ff;
+            box-shadow: 0 4px 12px var(--focus-ring);
+        }
+
+        .senator-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .party-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .party-labor { background-color: #e11f27; }
+        .party-liberal { background-color: #1c4f9c; }
+        .party-greens { background-color: #009c42; }
+        .party-national { background-color: #006944; }
+        .party-independent { background-color: #555; }
+        .party-other { background-color: #888; }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: auto;
+        }
+
+        button:hover { background-color: var(--primary-hover); }
+        button:active { transform: scale(0.98); }
+        button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+        .btn-full { width: 100%; font-size: 1.1rem; padding: 16px; margin-top: 20px; }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #059669; }
+        .btn-twitter { background-color: var(--twitter-color); }
+        .btn-twitter:hover { background-color: #0284c7; }
+        .btn-phone { background-color: var(--phone-color); }
+        .btn-phone:hover { background-color: #d97706; }
+        .btn-secondary { background-color: #64748b; }
+        .btn-secondary:hover { background-color: #475569; }
+
+        .action-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Results Output Areas */
+        .output-box {
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .output-email { background: #f8fafc; border: 1px solid #e2e8f0; font-family: monospace; white-space: pre-wrap; }
+        .output-tweet { background: #f0f9ff; border: 1px solid #bae6fd; font-style: italic; }
+        .output-phone { background: #fffbeb; border: 1px solid #fde68a; }
+
+        @media (max-width: 600px) {
+            .input-grid { grid-template-columns: 1fr; gap: 12px; }
+            .header-top { flex-direction: column; gap: 15px; text-align: center; }
+            button { width: 100%; }
+            .action-group { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="header-top">
+    <h1>RepWrite 🏛️</h1>
+    <a href="/about">About This App</a>
+</div>
+
+<!-- STEP 1: CAUSE -->
+<div class="card">
+    <h3 class="step-title"><span class="step-number">1</span> Select a Political Cause</h3>
+    <p class="helper-text">
+        Choose a cause you are passionate about. This provides the core context for our AI to generate a focused, relevant appeal.
+    </p>
+    <select id="causesDropdown">
+        <option value="">-- Loading Causes... --</option>
+    </select>
+    <div id="cause-content" class="cause-content"></div>
+</div>
+
+<!-- STEP 2: PERSONAL DETAILS (Moved up) -->
+<div id="personal-details-section" class="card hidden">
+    <h3 class="step-title"><span class="step-number">2</span> Your Details (Optional)</h3>
+    <p class="helper-text">
+        Providing these details helps craft an authentic appeal reflecting your unique voice. Set this once, and easily switch Senators below.
+    </p>
+    <div class="input-grid">
+        <div>
+            <label for="userName">Your Name</label>
+            <input type="text" id="userName" placeholder="e.g. Jane Doe">
+        </div>
+        <div>
+            <label for="userGender">Gender</label>
+            <select id="userGender">
+                <option value="">-- Select --</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Prefer to self-describe">Prefer to self-describe</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+        </div>
+        <div>
+            <label for="userAge">Age</label>
+            <input type="number" id="userAge" placeholder="e.g. 30">
+        </div>
+        <div>
+            <label for="userOccupation">Occupation</label>
+            <input type="text" id="userOccupation" placeholder="e.g. Teacher, Engineer">
+        </div>
+    </div>
+    <label for="importance">Why is this issue important to you?</label>
+    <textarea id="importance" rows="3" placeholder="Briefly share a personal connection or reason..."></textarea>
+</div>
+
+<!-- STEP 3: FIND SENATORS -->
+<div id="senator-finder-search" class="card hidden">
+    <h3 class="step-title"><span class="step-number">3</span> Find & Select Your Senator</h3>
+    <p class="helper-text">
+        Search by postcode or select your state. Click on a representative to generate a customized appeal.
+    </p>
+    <div class="input-grid">
+        <div>
+            <label for="postcode">Postcode</label>
+            <input type="text" id="postcode" maxlength="4" placeholder="e.g. 2000">
+        </div>
+        <div>
+            <label for="stateDropdown">Or Select State</label>
+            <select id="stateDropdown">
+                <option value="">-- Select State --</option>
+                <option value="NSW">New South Wales</option>
+                <option value="VIC">Victoria</option>
+                <option value="QLD">Queensland</option>
+                <option value="SA">South Australia</option>
+                <option value="WA">Western Australia</option>
+                <option value="TAS">Tasmania</option>
+                <option value="ACT">Australian Capital Territory</option>
+                <option value="NT">Northern Territory</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Senator Grid (Dynamic) -->
+    <div id="senator-container" class="hidden" style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+        <h4 id="senator-title" style="margin-bottom: 8px;">Select a Senator</h4>
+        <div id="senator-grid" class="senator-grid"></div>
+
+        <button id="submitEmail" class="btn-full hidden">✨ Generate Appeal</button>
+    </div>
+</div>
+
+<!-- STEP 4: RESULT -->
+<div id="email-result-section" class="card hidden" style="border-top: 6px solid var(--success-color);">
+    <h3 class="step-title" style="color: var(--success-color);"><span class="step-number" style="background: var(--success-color);">4</span> Your Generated Appeal</h3>
+
+    <p style="margin-bottom: 24px;">Review your generated messages below. You can always scroll up, select a different Senator, and generate another unique message instantly.</p>
+
+    <!-- Email Output -->
+    <div style="margin-bottom: 30px;">
+        <h4 style="color: var(--primary-color);">✉️ Email to Senator</h4>
+        <p style="margin: 4px 0;"><strong>To:</strong> <span id="emailTo"></span></p>
+        <p style="margin: 4px 0 12px 0;"><strong>Subject:</strong> <span id="emailSubject"></span></p>
+        <div id="emailBody" class="output-box output-email"></div>
+        <div class="action-group">
+            <button id="sendEmailBtn" class="btn-success">Open in Mail App</button>
+            <button id="copyEmailBtn" class="btn-secondary">Copy Text</button>
+        </div>
+    </div>
+
+    <!-- X / Twitter Output -->
+    <div style="margin-bottom: 30px;">
+        <h4 style="color: var(--twitter-color);">🐦 𝕏 (Twitter) Post</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Post this to raise public awareness and tag your Senator.</p>
+        <div id="tweetContent" class="output-box output-tweet"></div>
+        <button id="copyTweetBtn" class="btn-twitter">Copy Tweet</button>
+    </div>
+
+    <!-- Phone Script Output -->
+    <div>
+        <h4 style="color: var(--phone-color);">📞 Phone Script</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Call the Senator's office and read this brief message to their staff.</p>
+        <div id="phoneLineContent" class="output-box output-phone"></div>
+        <button id="copyPhoneBtn" class="btn-phone">Copy Script</button>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid var(--border-color); color: var(--text-muted);">
+    <p>Support this <a href="https://github.com/MannanM/RepWrite" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">open source</a> project:</p>
+    <a href="https://buymeacoffee.com/mannanm" target="_blank" style="display: inline-block; transition: transform 0.2s;">
+        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=mannanm&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a Coffee" style="height: 40px;">
+    </a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const causesDropdown = document.getElementById('causesDropdown');
+        const causeContent = document.getElementById('cause-content');
+
+        const personalDetailsSection = document.getElementById('personal-details-section');
+        const senatorSearch = document.getElementById('senator-finder-search');
+        const postcodeField = document.getElementById('postcode');
+        const stateDropdown = document.getElementById('stateDropdown');
+
+        const senatorContainer = document.getElementById('senator-container');
+        const senatorGrid = document.getElementById('senator-grid');
+        const senatorTitle = document.getElementById('senator-title');
+
+        const submitEmailBtn = document.getElementById('submitEmail');
+        const emailResultSection = document.getElementById('email-result-section');
+
+        const emailTo = document.getElementById('emailTo');
+        const emailSubject = document.getElementById('emailSubject');
+        const emailBody = document.getElementById('emailBody');
+        const tweetContent = document.getElementById('tweetContent');
+        const phoneLineContent = document.getElementById('phoneLineContent');
+
+        let selectedSenator = null;
+        let currentEmail = null;
+
+        async function loadCauses() {
+            try {
+                const res = await fetch('/api/causes?status=active');
+                if (res.ok) {
+                    const causes = await res.json();
+                    causesDropdown.innerHTML = '<option value="">-- Select a Political Cause --</option>';
+                    causes.forEach(cause => {
+                        const opt = document.createElement('option');
+                        opt.value = cause.id;
+                        opt.textContent = cause.name;
+                        causesDropdown.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to load causes', err);
+                causesDropdown.innerHTML = '<option value="">Error loading causes</option>';
+            }
+        }
+
+        causesDropdown.addEventListener('change', async (e) => {
+            const causeId = e.target.value;
+            if (!causeId) {
+                causeContent.style.display = 'none';
+                personalDetailsSection.classList.add('hidden');
+                senatorSearch.classList.add('hidden');
+                emailResultSection.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/causes/${causeId}`);
+                if (res.ok) {
+                    const cause = await res.json();
+                    causeContent.textContent = cause.content;
+                    causeContent.style.display = 'block';
+
+                    // Unhide subsequent steps
+                    personalDetailsSection.classList.remove('hidden');
+                    senatorSearch.classList.remove('hidden');
+
+                    // Scroll nicely to details
+                    setTimeout(() => {
+                        personalDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            } catch (err) {
+                console.error('Failed to load cause detail', err);
+            }
+        });
+
+        function getFullStateName(stateCode) {
+            const states = {
+                "NSW": "New South Wales", "VIC": "Victoria", "QLD": "Queensland",
+                "SA": "South Australia", "WA": "Western Australia", "TAS": "Tasmania",
+                "ACT": "Australian Capital Territory", "NT": "Northern Territory"
+            };
+            return states[stateCode] || stateCode;
+        }
+
+        function updateSenators(data, stateCode) {
+            senatorGrid.innerHTML = '';
+            submitEmailBtn.classList.add('hidden');
+            selectedSenator = null;
+
+            if (data.length > 0) {
+                senatorContainer.classList.remove('hidden');
+                const fullState = getFullStateName(stateCode);
+                senatorTitle.textContent = `Current ${fullState} Senators`;
+            } else {
+                senatorContainer.classList.add('hidden');
+                return;
+            }
+
+            data.forEach(senator => {
+                const partyClass = (senator.party || '').toLowerCase();
+                let badgeClass = 'party-other';
+                if (partyClass.includes('labor')) badgeClass = 'party-labor';
+                else if (partyClass.includes('liberal')) badgeClass = 'party-liberal';
+                else if (partyClass.includes('greens')) badgeClass = 'party-greens';
+                else if (partyClass.includes('national')) badgeClass = 'party-national';
+                else if (partyClass.includes('independent')) badgeClass = 'party-independent';
+
+                const card = document.createElement('div');
+                card.className = 'senator-card-item';
+                card.innerHTML = `
+                    <div class="senator-name">${senator.name}</div>
+                    <span class="party-badge ${badgeClass}">${senator.party}</span>
+                `;
+
+                card.addEventListener('click', () => {
+                    // Deselect others
+                    document.querySelectorAll('.senator-card-item').forEach(c => c.classList.remove('selected'));
+                    // Select this
+                    card.classList.add('selected');
+                    selectedSenator = senator.id;
+
+                    // Show and enable generate button
+                    submitEmailBtn.classList.remove('hidden');
+                });
+
+                senatorGrid.appendChild(card);
+            });
+        }
+
+        async function fetchByPostcode(postcode) {
+            if (postcode.length !== 4) {
+                senatorContainer.classList.add('hidden');
+                return;
+            }
+            try {
+                const res = await fetch(`/api/postcodes/${postcode}/senators`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.length > 0) {
+                        const stateMap = {
+                            "New South Wales": "NSW", "Victoria": "VIC", "Queensland": "QLD",
+                            "South Australia": "SA", "Western Australia": "WA", "Tasmania": "TAS",
+                            "Australian Capital Territory": "ACT", "Northern Territory": "NT"
+                        };
+                        updateSenators(data, stateMap[data[0].state] || data[0].state);
+                    } else {
+                        updateSenators(data, "");
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching postcode", err);
+            }
+        }
+
+        async function fetchByState(state) {
+            if (!state) {
+                senatorContainer.classList.add('hidden');
+                return;
+            }
+            try {
+                const res = await fetch(`/api/states/${state}/senators`);
+                if (res.ok) {
+                    const data = await res.json();
+                    updateSenators(data, state);
+                    postcodeField.value = '';
+                }
+            } catch (err) {
+                console.error("Error fetching state", err);
+            }
+        }
+
+        postcodeField.addEventListener('input', (e) => {
+            stateDropdown.value = '';
+            if(e.target.value.length === 4) {
+                fetchByPostcode(e.target.value);
+            } else {
+                senatorContainer.classList.add('hidden');
+            }
+        });
+
+        stateDropdown.addEventListener('change', (e) => {
+            fetchByState(e.target.value);
+        });
+
+        submitEmailBtn.addEventListener('click', async () => {
+            if (!selectedSenator) return;
+
+            const causeId = causesDropdown.value;
+            const requestData = {
+                causeId: causeId,
+                senatorId: selectedSenator,
+                name: document.getElementById('userName').value || null,
+                gender: document.getElementById('userGender').value || null,
+                age: parseInt(document.getElementById('userAge').value) || null,
+                occupation: document.getElementById('userOccupation').value || null,
+                importance: document.getElementById('importance').value || null
+            };
+
+            const originalText = submitEmailBtn.innerHTML;
+            submitEmailBtn.innerHTML = '⏳ Generating Appeal...';
+            submitEmailBtn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/causes/${causeId}/generate-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (res.ok) {
+                    currentEmail = await res.json();
+                    emailTo.textContent = currentEmail.toAddress;
+                    emailSubject.textContent = currentEmail.subject;
+                    emailBody.textContent = currentEmail.body;
+                    tweetContent.textContent = currentEmail.tweet || 'No tweet generated.';
+                    phoneLineContent.textContent = currentEmail.phoneLine || 'No phone script generated.';
+
+                    emailResultSection.classList.remove('hidden');
+                    setTimeout(() => {
+                        emailResultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                } else {
+                    throw new Error('Server returned an error.');
+                }
+            } catch (err) {
+                console.error('Failed to generate email', err);
+                alert('Error generating email. Please try again.');
+            } finally {
+                submitEmailBtn.innerHTML = originalText;
+                submitEmailBtn.disabled = false;
+            }
+        });
+
+        // Copy/Send Utilities
+        function copyText(elementId, btnElement, defaultText) {
+            const text = document.getElementById(elementId).innerText || document.getElementById(elementId).textContent;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                btnElement.textContent = 'Copied! ✓';
+                setTimeout(() => btnElement.textContent = defaultText, 2000);
+            });
+        }
+
+        document.getElementById('sendEmailBtn').addEventListener('click', () => {
+            if (!currentEmail) return;
+            const to = currentEmail.toAddress;
+            const subject = encodeURIComponent(currentEmail.subject);
+            const body = encodeURIComponent(currentEmail.body);
+            window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+        });
+
+        document.getElementById('copyEmailBtn').addEventListener('click', (e) => {
+            copyText('emailBody', e.target, 'Copy Text');
+        });
+
+        document.getElementById('copyTweetBtn').addEventListener('click', (e) => {
+            copyText('tweetContent', e.target, 'Copy Tweet');
+        });
+
+        document.getElementById('copyPhoneBtn').addEventListener('click', (e) => {
+            copyText('phoneLineContent', e.target, 'Copy Script');
+        });
+
+        // Init
+        loadCauses();
+    });
+</script>
+</body>
+
+</html>

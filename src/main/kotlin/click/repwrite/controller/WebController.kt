@@ -5,7 +5,7 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 
 @Controller
-class HelloController {
+class WebController {
 
     @GetMapping("/")
     fun index(): String {
@@ -13,13 +13,17 @@ class HelloController {
     }
 
     @GetMapping("/generate")
-    fun hello(model: Model): String {
-        model.addAttribute("message", "Hello World")
-        return "hello"
+    fun generate(): String {
+        return "generate"
     }
 
     @GetMapping("/about")
     fun about(): String {
         return "about"
+    }
+
+    @GetMapping("/refresh-senators")
+    fun refreshSenatorsPage(): String {
+        return "refresh-senators"
     }
 }

@@ -23,7 +23,7 @@ In a healthy democracy, your voice matters. But sometimes, it's hard to know how
 -   **Frontend**: Thymeleaf, Vanilla CSS, Javascript
 -   **Database**: DynamoDB (initialized via `DynamoDbInitializer`)
 -   **AI Integration**: Google Gemini AI
--   **Infrastructure**: AWS (CloudFormation, EC2, Secrets Manager)
+-   **Infrastructure**: AWS (CloudFormation, EC2, Parameter Store)
 
 ### Prerequisites
 -   Java 21
