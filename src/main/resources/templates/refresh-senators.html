@@ -179,7 +179,8 @@
         async function fetchSenators() {
             try {
                 addLog('Fetching list of all senators...');
-                const response = await fetch('/api/senators');
+                const today = new Date().toISOString().split('T')[0];
+                const response = await fetch(`/api/senators?_date=${today}`);
                 if (!response.ok) throw new Error('Failed to fetch senators');
                 const rawSenators = await response.json();
                 

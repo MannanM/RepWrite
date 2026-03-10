@@ -70,39 +70,44 @@ class GeminiAiService(
                 val currentYear = java.time.LocalDate.now().year
                 val prompt =
                         """
-            You are a passionate Australian citizen writing to your Senator to advocate for a political cause.
-            
-            **Context:**
-            - **Senator:** ${senator.name} (Party: ${senator.party}, Age: ${senator.birthYear?.let { currentYear - it } ?: "Unknown"}, Years in Office: ${senator.firstYearInOffice?.let { currentYear - it } ?: "Unknown"})
-            ${senator.background?.takeIf { it.isNotBlank() }?.let { "- **Senator Background:** $it" } ?: ""}
-            - **Political Cause:** ${cause.name}
-            - **Cause Detail:** ${cause.content}
-            
-            **User Details (The writer):**
-            ${userDetails.name?.let { "- **Name:** $it" } ?: "- **Name:** A concerned citizen"}
-            ${userDetails.gender?.let { "- **Gender:** $it" } ?: ""}
-            ${userDetails.age?.let { "- **Age:** $it" } ?: ""}
-            ${userDetails.occupation?.let { "- **Occupation:** $it" } ?: ""}
-            - **Why this is important to them:** ${userDetails.importance ?: "The user is deeply concerned about the future of the country and the impact of this issue on their community."}
-            
-            **Task:**
-            Write a highly empassioned, respectful, and persuasive email to the Senator, a short tweet, and a one-sentence phone script.
-            - **Email Tone:** Human, authentic, and urgent. Avoid sounding like a template or a robot.
-            - **Email Length:** Keep it concise, **2-3 paragraphs maximum**.
-            - **Tweet:** A short, impactful post for X (Twitter) including 1-2 relevant hashtags. Max 280 characters.
-            - **Phone Script:** A single, clear sentence that the user can read over the phone to the Senator's office.
-            - **Spelling:** Use **Australian English** (e.g., 'labour', 'organise', 'centre', 'programme').
-            - **Constraints:** **Avoid using dashes** (— or -) to separate clauses; use commas or full stops instead.
-            - **Personalization:** Use the Senator's background (party, experience) and the user's personal context to build a compelling narrative.
-            
-            **Output Format:**
-            Return ONLY a valid JSON object with the following structure:
-            {
-              "subject": "A compelling and clear subject line",
-              "body": "The full email, 2-3 paragraphs, including salutation and sign-off",
-              "tweet": "The short tweet content including why it's important personally",
-              "phoneLine": "The two-sentence phone script including why it's important personally"
-            }
+                You are an expert political campaigner helping an Australian citizen write to their Senator to advocate for a specific cause.
+
+                **Context:**
+                - **Senator:** ${senator.name} (Party: ${senator.party}, Age: ${senator.birthYear?.let { currentYear - it } ?: "Unknown"}, Years in Office: ${senator.firstYearInOffice?.let { currentYear - it } ?: "Unknown"})
+                ${senator.background?.takeIf { it.isNotBlank() }?.let { "- **Senator Background:** $it" } ?: ""}
+                ${senator.handle?.takeIf { it.isNotBlank() }?.let { "- **Senator Twitter Handle:** $it" } ?: ""}
+                - **Political Cause:** ${cause.name}
+                - **Cause Detail:** ${cause.content}
+
+                **User Details (The writer):**
+                ${userDetails.name?.let { "- **Name:** $it" } ?: "- **Name:** A concerned constituent"}
+                ${userDetails.gender?.let { "- **Gender:** $it" } ?: ""}
+                ${userDetails.age?.let { "- **Age:** $it" } ?: ""}
+                ${userDetails.occupation?.let { "- **Occupation:** $it" } ?: ""}
+                - **Why this is important to them:** ${userDetails.importance ?: "The user is deeply concerned about the future of the country and the impact of this issue on their community."}
+
+                **Task:**
+                Write an authentic, firm, and persuasive email to the Senator, a short tweet, and a brief phone script.
+
+                **Constraints & Guidelines:**
+                - **Email Tone:** Human, grounded, and polite but urgent. Avoid sounding like an automated template, overly dramatic, or academic.
+                - **Email Length:** Keep it concise, **2-3 paragraphs maximum**.
+                - **Call to Action (CTA):** The email MUST end with a clear, specific request to the Senator (e.g., asking them to support/oppose a policy, raise the issue in parliament, or vote a certain way).
+                - **Tweet:** A short, impactful post for X (Twitter) mentioning the personal importance of the cause. Include 1-2 relevant hashtags. Max 280 characters.
+                - **Phone Script:** A punchy **two-sentence** script the user can read to the Senator's staff (Sentence 1: Who I am and why I care. Sentence 2: The specific action I want the Senator to take).
+                - **Personalisation:** Skillfully weave the Senator's background (party values, past experience) and the User's personal details together to create a compelling, tailored narrative.
+                - **Formatting:** **Avoid using dashes** (— or -) to separate clauses; use commas or full stops instead.
+                - **Spelling:** Use **Australian English** (e.g., 'organise', 'centre', 'programme'). 
+                - **Crucial Rule:** Always spell the political party as "Labor", but the concept of work as "labour".
+
+                **Output Format:**
+                Return ONLY a valid, raw JSON object. Use the exact structure below:
+                {
+                        "subject": "A compelling, natural subject line (avoid generic 'A concerned citizen' titles)",
+                        "body": "The full email, 2-3 paragraphs, including a respectful salutation and sign-off",
+                        "tweet": "The short tweet content",
+                        "phoneLine": "The two-sentence phone script"
+                }
         """.trimIndent()
 
                 return callGemini(prompt, InternalEmailResponse::class.java)?.let {

@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 
 class WikiContentServiceTest {
 
@@ -39,7 +40,7 @@ class WikiContentServiceTest {
 
         every {
             restTemplate.exchange(
-                url,
+                URI.create(url),
                 HttpMethod.GET,
                 any<HttpEntity<Void>>(),
                 String::class.java
@@ -56,7 +57,7 @@ class WikiContentServiceTest {
         val url = "https://en.wikipedia.org/wiki/Fail"
         every {
             restTemplate.exchange(
-                url,
+                URI.create(url),
                 HttpMethod.GET,
                 any<HttpEntity<Void>>(),
                 String::class.java
