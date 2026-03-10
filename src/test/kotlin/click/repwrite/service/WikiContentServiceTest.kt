@@ -1,11 +1,13 @@
 package click.repwrite.service
 
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.springframework.boot.restclient.RestTemplateBuilder
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
 
 class WikiContentServiceTest {
@@ -32,7 +34,17 @@ class WikiContentServiceTest {
             </html>
         """.trimIndent()
 
-        every { restTemplate.getForObject(url, String::class.java) } returns html
+        val response = mockk<ResponseEntity<String>>()
+        every { response.body } returns html
+
+        every {
+            restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                any<HttpEntity<Void>>(),
+                String::class.java
+            )
+        } returns response
 
         val result = service.fetchAndCleanWikiContent(url)
 
@@ -42,7 +54,14 @@ class WikiContentServiceTest {
     @Test
     fun `should return null on error`() {
         val url = "https://en.wikipedia.org/wiki/Fail"
-        every { restTemplate.getForObject(url, String::class.java) } throws RuntimeException("Network error")
+        every {
+            restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                any<HttpEntity<Void>>(),
+                String::class.java
+            )
+        } throws RuntimeException("Network error")
 
         val result = service.fetchAndCleanWikiContent(url)
 

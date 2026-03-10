@@ -13,8 +13,7 @@ class WebController {
     }
 
     @GetMapping("/generate")
-    fun hello(model: Model): String {
-        model.addAttribute("message", "Hello World")
+    fun generate(): String {
         return "generate"
     }
 

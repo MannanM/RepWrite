@@ -66,7 +66,7 @@ class SenatorRestControllerTest {
         every { geminiAiService.summarizeSenatorBackground(any(), any()) } returns "Summarized background"
         every { table.updateItem(any<Senator>()) } returns senator
 
-        val authHeader = "Basic " + Base64.getEncoder().encodeToString("user:pass".toByteArray())
+        val authHeader = "Basic " + Base64.getEncoder().encodeToString("admin:pass".toByteArray())
 
         mockMvc.perform(post("/api/senators/BRAG-1")
             .header(HttpHeaders.AUTHORIZATION, authHeader))

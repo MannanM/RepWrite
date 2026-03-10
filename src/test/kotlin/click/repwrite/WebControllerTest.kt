@@ -8,19 +8,28 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.view
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.servlet.view.InternalResourceViewResolver
 
 class WebControllerTest {
 
     private lateinit var mockMvc: MockMvc
 
     @BeforeEach
-    fun setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(WebController()).build()
+    fun setUp() {
+        val viewResolver = InternalResourceViewResolver()
+        viewResolver.setPrefix("/templates/")
+        viewResolver.setSuffix(".html")
+
+        mockMvc = MockMvcBuilders.standaloneSetup(WebController())
+            .setViewResolvers(viewResolver)
+            .build()
     }
 
     @Test
-    fun `should return hello view`() {
-        mockMvc.perform(get("/generate")).andExpect(status().isOk).andExpect(view().name("hello"))
+    fun `should return generate`() {
+        mockMvc.perform(get("/generate"))
+            .andExpect(status().isOk)
+            .andExpect(view().name("generate"))
     }
 
     @Test
