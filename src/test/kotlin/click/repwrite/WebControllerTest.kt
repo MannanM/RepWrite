@@ -1,6 +1,6 @@
 package click.repwrite
 
-import click.repwrite.controller.HelloController
+import click.repwrite.controller.WebController
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.MockMvc
@@ -9,13 +9,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.view
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-class HelloControllerTest {
+class WebControllerTest {
 
     private lateinit var mockMvc: MockMvc
 
     @BeforeEach
     fun setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(HelloController()).build()
+        mockMvc = MockMvcBuilders.standaloneSetup(WebController()).build()
     }
 
     @Test

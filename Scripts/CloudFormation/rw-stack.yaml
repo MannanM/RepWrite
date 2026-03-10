@@ -128,8 +128,10 @@ Resources:
                 Resource: "*"
               - Effect: Allow
                 Action:
-                  - secretsmanager:GetSecretValue
-                Resource: !Ref GeminiApiKeySecret
+                  - ssm:GetParameter
+                Resource: 
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/gemini/api-key"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/repwrite/admin-password"
               - Effect: Allow
                 Action:
                   - dynamodb:GetItem
@@ -313,17 +315,28 @@ Resources:
                   - autoscaling:StartInstanceRefresh
                 Resource: !Sub 'arn:${AWS::Partition}:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${JavaAppAutoScalingGroup}'
 
-  ### SECRETS MANAGER ###
-  GeminiApiKeySecret:
-    Type: AWS::SecretsManager::Secret
+  ### PARAMETER STORE ###
+  GeminiApiKeyParameter:
+    Type: AWS::SSM::Parameter
     Properties:
-      Name: gemini/api-key
+      Name: /gemini/api-key
+      Type: String
+      Value: "PLACEHOLDER"
       Description: API key for Gemini AI service
       Tags:
-        - Key: App
-          Value: RW
-        - Key: Layer
-          Value: security
+        App: RW
+        Layer: security
+
+  AdminPasswordParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /repwrite/admin-password
+      Type: String
+      Value: "PLACEHOLDER"
+      Description: Admin password for sensitive actions
+      Tags:
+        App: RW
+        Layer: security
 
   ### DYNAMODB TABLES ###
   SenatorsTable:

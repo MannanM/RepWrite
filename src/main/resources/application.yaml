@@ -5,7 +5,7 @@ spring:
     cache: false
 
 aws:
-  secrets-manager:
+  ssm:
     region: "ap-southeast-2"
   dynamodb:
     endpoint: "http://localhost:8000"
@@ -13,3 +13,7 @@ aws:
 
 gemini:
   url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent"
+
+repwrite:
+  admin:
+    password: "pass"

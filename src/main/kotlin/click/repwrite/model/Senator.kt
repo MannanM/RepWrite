@@ -12,5 +12,8 @@ data class Senator(
     var party: String? = null,
     var state: String? = null,
     var firstYearInOffice: Int? = null,
-    var background: String? = null
+    var background: String? = null,
+    var phone: String? = null,
+    var handle: String? = null,
+    var wikiUrl: String? = null
 )
