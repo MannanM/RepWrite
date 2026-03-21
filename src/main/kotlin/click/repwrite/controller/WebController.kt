@@ -8,22 +8,14 @@ import org.springframework.web.bind.annotation.GetMapping
 class WebController {
 
     @GetMapping("/")
-    fun index(): String {
-        return "redirect:/generate"
-    }
+    fun index() = "redirect:/generate"
 
     @GetMapping("/generate")
-    fun generate(): String {
-        return "generate"
-    }
+    fun generate() = "generate"
 
     @GetMapping("/about")
-    fun about(): String {
-        return "about"
-    }
+    fun about() = "about"
 
-    @GetMapping("/refresh-senators")
-    fun refreshSenatorsPage(): String {
-        return "refresh-senators"
-    }
+    @GetMapping("/refresh-politicians")
+    fun refreshPoliticiansPage() = "refresh-politicians"
 }

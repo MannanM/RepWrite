@@ -144,7 +144,7 @@ Resources:
                   - dynamodb:BatchWriteItem
                   - dynamodb:DescribeTable
                 Resource:
-                  - !GetAtt SenatorsTable.Arn
+                  - !GetAtt PoliticiansTable.Arn
                   - !GetAtt CausesTable.Arn
                   - !GetAtt CachedAppealsTable.Arn
 
@@ -339,10 +339,10 @@ Resources:
         Layer: security
 
   ### DYNAMODB TABLES ###
-  SenatorsTable:
+  PoliticiansTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: SenatorsTable
+      TableName: PoliticiansTable
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -370,11 +370,11 @@ Resources:
       AttributeDefinitions:
         - AttributeName: causeId
           AttributeType: S
-        - AttributeName: senatorIdInfoHash
+        - AttributeName: politicianIdInfoHash
           AttributeType: S
       KeySchema:
         - AttributeName: causeId
           KeyType: HASH
-        - AttributeName: senatorIdInfoHash
+        - AttributeName: politicianIdInfoHash
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST

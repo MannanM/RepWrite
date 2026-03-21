@@ -2,7 +2,7 @@ package click.repwrite.controller
 
 import click.repwrite.ai.GeminiAiService
 import click.repwrite.config.RepWriteProperties
-import click.repwrite.model.Senator
+import click.repwrite.model.Politician
 import click.repwrite.service.WikiContentService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
@@ -18,7 +18,7 @@ import java.util.Base64
 
 @RestController
 @RequestMapping("/api")
-class SenatorRestController(
+class PoliticianRestController(
         private val enhancedClient: DynamoDbEnhancedClient,
         private val wikiContentService: WikiContentService,
         private val geminiAiService: GeminiAiService,
@@ -26,8 +26,8 @@ class SenatorRestController(
         private val ssmClient: SsmClient,
 ) {
 
-    private val logger = LoggerFactory.getLogger(SenatorRestController::class.java)
-    private val table = enhancedClient.table("SenatorsTable", TableSchema.fromBean(Senator::class.java))
+    private val logger = LoggerFactory.getLogger(PoliticianRestController::class.java)
+    private val table = enhancedClient.table("PoliticiansTable", TableSchema.fromBean(Politician::class.java))
 
     private val adminPassword by lazy {
         val configuredPassword = repWriteProperties.password
@@ -50,24 +50,24 @@ class SenatorRestController(
         }
     }
 
-    @GetMapping("/senators")
-    fun getAllSenators(): List<Senator> {
+    @GetMapping("/politicians")
+    fun getAllPoliticians(): List<Politician> {
         return table.scan().items().toList().sortedBy { it.name }
     }
 
-    @PostMapping("/senators/{id}")
-    fun enrichSenatorBackground(
+    @PostMapping("/politicians/{id}")
+    fun enrichPoliticianBackground(
         @PathVariable id: String,
         @RequestHeader(HttpHeaders.AUTHORIZATION, required = false) authHeader: String?
-    ): ResponseEntity<Senator> {
+    ): ResponseEntity<Politician> {
         if (!isAuthorized(authHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         }
 
         val key = Key.builder().partitionValue(id).build()
-        val senator = table.getItem(key) ?: return ResponseEntity.notFound().build()
+        val politician = table.getItem(key) ?: return ResponseEntity.notFound().build()
 
-        val wikiUrl = senator.wikiUrl
+        val wikiUrl = politician.wikiUrl
         if (wikiUrl.isNullOrBlank()) {
             return ResponseEntity.badRequest().build()
         }
@@ -77,30 +77,30 @@ class SenatorRestController(
             return ResponseEntity.internalServerError().build()
         }
 
-        val summary = geminiAiService.summarizeSenatorBackground(content, senator)
+        val summary = geminiAiService.summarizePoliticianBackground(content, politician)
         if (summary.isNullOrBlank()) {
             return ResponseEntity.internalServerError().build()
         }
 
-        senator.background = summary
-        table.updateItem(senator)
+        politician.background = summary
+        table.updateItem(politician)
 
-        return ResponseEntity.ok(senator)
+        return ResponseEntity.ok(politician)
     }
 
     @GetMapping("/states/{state}/senators")
-    fun getSenatorsByState(@PathVariable state: String): List<Senator> {
+    fun getPoliticiansByState(@PathVariable state: String): List<Politician> {
         val fullStateName = mapStateAbbreviation(state.uppercase())
         return table.scan().items()
-            .filter { it.state?.equals(fullStateName, ignoreCase = true) == true }
-            .sortedBy { it.name }
+            .filter { it.electorate?.equals(fullStateName, ignoreCase = true) == true }
             .toList()
+            .sortedBy { it.name }
     }
 
-    @GetMapping("/postcodes/{postcode}/senators")
-    fun getSenatorsByPostcode(@PathVariable postcode: String): List<Senator> {
-        val state = convertPostcodeToState(postcode) ?: return emptyList<Senator>()
-        return getSenatorsByState(state)
+    @GetMapping("/postcodes/{postcode}/politicians")
+    fun getPoliticiansByPostcode(@PathVariable postcode: String): List<Politician> {
+        val state = convertPostcodeToState(postcode) ?: return emptyList<Politician>()
+        return getPoliticiansByState(state)
     }
 
     private fun isAuthorized(authHeader: String?): Boolean {

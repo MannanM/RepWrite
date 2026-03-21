@@ -3,7 +3,7 @@ package click.repwrite.ai
 import click.repwrite.model.Cause
 import click.repwrite.model.EmailRequest
 import click.repwrite.model.EmailResponse
-import click.repwrite.model.Senator
+import click.repwrite.model.Politician
 import java.io.IOException
 import org.slf4j.LoggerFactory
 import org.springframework.boot.restclient.RestTemplateBuilder
@@ -64,18 +64,19 @@ class GeminiAiService(
 
         fun generateEmail(
                 cause: Cause,
-                senator: Senator,
+                politician: Politician,
                 userDetails: EmailRequest
         ): EmailResponse? {
                 val currentYear = java.time.LocalDate.now().year
+                val title = if (politician.type?.equals("Representative", ignoreCase = true) == true) "Representative" else "Senator"
                 val prompt =
                         """
-                You are an expert political campaigner helping an Australian citizen write to their Senator to advocate for a specific cause.
+                You are an expert political campaigner helping an Australian citizen write to their $title to advocate for a specific cause.
 
                 **Context:**
-                - **Senator:** ${senator.name} (Party: ${senator.party}, Age: ${senator.birthYear?.let { currentYear - it } ?: "Unknown"}, Years in Office: ${senator.firstYearInOffice?.let { currentYear - it } ?: "Unknown"})
-                ${senator.background?.takeIf { it.isNotBlank() }?.let { "- **Senator Background:** $it" } ?: ""}
-                ${senator.handle?.takeIf { it.isNotBlank() }?.let { "- **Senator Twitter Handle:** $it" } ?: ""}
+                - **$title:** ${politician.name} (Party: ${politician.party}, Age: ${politician.birthYear?.let { currentYear - it } ?: "Unknown"}, Years in Office: ${politician.firstYearInOffice?.let { currentYear - it } ?: "Unknown"})
+                ${politician.background?.takeIf { it.isNotBlank() }?.let { "- **$title Background:** $it" } ?: ""}
+                ${politician.handle?.takeIf { it.isNotBlank() }?.let { "- **$title Twitter Handle:** $it" } ?: ""}
                 - **Political Cause:** ${cause.name}
                 - **Cause Detail:** ${cause.content}
 
@@ -87,15 +88,15 @@ class GeminiAiService(
                 - **Why this is important to them:** ${userDetails.importance ?: "The user is deeply concerned about the future of the country and the impact of this issue on their community."}
 
                 **Task:**
-                Write an authentic, firm, and persuasive email to the Senator, a short tweet, and a brief phone script.
+                Write an authentic, firm, and persuasive email to the $title, a short tweet, and a brief phone script.
 
                 **Constraints & Guidelines:**
                 - **Email Tone:** Human, grounded, and polite but urgent. Avoid sounding like an automated template, overly dramatic, or academic.
                 - **Email Length:** Keep it concise, **2-3 paragraphs maximum**.
-                - **Call to Action (CTA):** The email MUST end with a clear, specific request to the Senator (e.g., asking them to support/oppose a policy, raise the issue in parliament, or vote a certain way).
+                - **Call to Action (CTA):** The email MUST end with a clear, specific request to the $title (e.g., asking them to support/oppose a policy, raise the issue in parliament, or vote a certain way).
                 - **Tweet:** A short, impactful post for X (Twitter) mentioning the personal importance of the cause. Include 1-2 relevant hashtags. Max 280 characters.
-                - **Phone Script:** A punchy **two-sentence** script the user can read to the Senator's staff (Sentence 1: Who I am and why I care. Sentence 2: The specific action I want the Senator to take).
-                - **Personalisation:** Skillfully weave the Senator's background (party values, past experience) and the User's personal details together to create a compelling, tailored narrative.
+                - **Phone Script:** A punchy **two-sentence** script the user can read to the $title's staff (Sentence 1: Who I am and why I care. Sentence 2: The specific action I want the $title to take).
+                - **Personalisation:** Skillfully weave the $title's background (party values, past experience) and the User's personal details together to create a compelling, tailored narrative.
                 - **Formatting:** **Avoid using dashes** (— or -) to separate clauses; use commas or full stops instead.
                 - **Spelling:** Use **Australian English** (e.g., 'organise', 'centre', 'programme'). 
                 - **Crucial Rule:** Always spell the political party as "Labor", but the concept of work as "labour".
@@ -111,9 +112,10 @@ class GeminiAiService(
         """.trimIndent()
 
                 return callGemini(prompt, InternalEmailResponse::class.java)?.let {
+                        val defaultTitle = if (politician.type?.equals("Representative", ignoreCase = true) == true) "representative" else "senator"
                         EmailResponse(
-                                toAddress = senator.email
-                                                ?: "senator.${senator.name?.replace(" ", ".")?.lowercase()}@aph.gov.au",
+                                toAddress = politician.email
+                                                ?: "${defaultTitle}.${politician.name?.replace(" ", ".")?.lowercase()}@aph.gov.au",
                                 subject = it.subject,
                                 body = it.body,
                                 tweet = it.tweet,
@@ -122,22 +124,23 @@ class GeminiAiService(
                 }
         }
 
-        fun summarizeSenatorBackground(wikiContent: String, senator: Senator): String? {
+        fun summarizePoliticianBackground(wikiContent: String, politician: Politician): String? {
+                val title = if (politician.type?.equals("Representative", ignoreCase = true) == true) "Representative" else "Senator"
                 val prompt =
                         """You are an expert political researcher and strategist helping to craft personalised advocacy appeals.
 
-        **Senator Information (Already Known - DO NOT REPEAT):**
-        - Name: ${senator.name}
-        - Party: ${senator.party}
-        - State: ${senator.state}
-        - Birth Year: ${senator.birthYear}
-        - First Year in Office: ${senator.firstYearInOffice}
+        **$title Information (Already Known - DO NOT REPEAT):**
+        - Name: ${politician.name}
+        - Party: ${politician.party}
+        - Electorate: ${politician.electorate}
+        - Birth Year: ${politician.birthYear}
+        - First Year in Office: ${politician.firstYearInOffice}
 
         **Wikipedia Content:**
         $wikiContent
 
         **Task:**
-        Summarise the background of this Senator based ONLY on the Wikipedia content provided above. Your goal is to extract insights that would be highly useful for campaigners or advocates tailoring a persuasive appeal for a social cause.
+        Summarise the background of this $title based ONLY on the Wikipedia content provided above. Your goal is to extract insights that would be highly useful for campaigners or advocates tailoring a persuasive appeal for a social cause.
 
         Focus on:
         1. Core Values & Factions: Their core political values, ideological leanings, and factional alignment (e.g., Labor Left, Liberal Moderates, National Right) if mentioned.

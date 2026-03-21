@@ -8,8 +8,8 @@ import java.time.Instant
 @DynamoDbBean
 data class CachedAppeal(
     @get:DynamoDbPartitionKey var causeId: String? = null,
-    @get:DynamoDbSortKey var senatorIdInfoHash: String? = null, // Format: senatorId#infoHash
-    var senatorId: String? = null,
+    @get:DynamoDbSortKey var politicianIdInfoHash: String? = null, // Format: politicianId#infoHash
+    var politicianId: String? = null,
     var infoHash: String? = null,
     var subject: String? = null,
     var body: String? = null,

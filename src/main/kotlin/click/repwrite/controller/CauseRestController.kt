@@ -5,12 +5,13 @@ import click.repwrite.model.CachedAppeal
 import click.repwrite.model.Cause
 import click.repwrite.model.EmailRequest
 import click.repwrite.model.EmailResponse
-import click.repwrite.model.Senator
+import click.repwrite.model.Politician
 import java.security.MessageDigest
 import java.time.LocalDate
 import org.springframework.web.bind.annotation.*
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
+import software.amazon.awssdk.enhanced.dynamodb.Key
 
 @RestController
 @RequestMapping("/api/causes")
@@ -21,8 +22,8 @@ class CauseRestController(
 
     private val causesTable =
             enhancedClient.table("CausesTable", TableSchema.fromBean(Cause::class.java))
-    private val senatorsTable =
-            enhancedClient.table("SenatorsTable", TableSchema.fromBean(Senator::class.java))
+    private val politiciansTable =
+            enhancedClient.table("PoliticiansTable", TableSchema.fromBean(Politician::class.java))
 
     private val cachedAppealsTable =
             enhancedClient.table(
@@ -47,36 +48,37 @@ class CauseRestController(
     @GetMapping("/{id}")
     fun getCause(@PathVariable id: String): Cause? {
         return causesTable.getItem(
-                software.amazon.awssdk.enhanced.dynamodb.Key.builder().partitionValue(id).build()
+                Key.builder().partitionValue(id).build()
         )
     }
 
     @PostMapping("/{id}/generate-email")
     fun generateEmail(@PathVariable id: String, @RequestBody request: EmailRequest): EmailResponse {
         val cause = getCause(id) ?: throw IllegalArgumentException("Cause not found")
-        val senator =
-                senatorsTable.getItem(
-                        software.amazon.awssdk.enhanced.dynamodb.Key.builder()
-                                .partitionValue(request.senatorId)
+        val politician =
+                politiciansTable.getItem(
+                        Key.builder()
+                                .partitionValue(request.politicianId)
                                 .build()
                 )
-                        ?: throw IllegalArgumentException("Senator not found")
+                        ?: throw IllegalArgumentException("Politician not found")
 
         val infoHash = request.generateInfoHash()
-        val sortKey = "${request.senatorId}#$infoHash"
+        val sortKey = "${request.politicianId}#$infoHash"
 
         // 1. Try to find exact match in cache
         val cached =
                 cachedAppealsTable.getItem(
-                        software.amazon.awssdk.enhanced.dynamodb.Key.builder()
+                        Key.builder()
                                 .partitionValue(id)
                                 .sortValue(sortKey)
                                 .build()
                 )
         if (cached != null) {
+            val title = if (politician.type?.equals("Representative", ignoreCase = true) == true) "representative" else "senator"
             return EmailResponse(
-                    toAddress = senator.email
-                                    ?: "senator.${senator.name?.replace(" ", ".")?.lowercase()}@aph.gov.au",
+                    toAddress = politician.email
+                                    ?: "${title}.${politician.name?.replace(" ", ".")?.lowercase()}@aph.gov.au",
                     subject = cached.subject ?: "",
                     body = cached.body ?: "",
                     tweet = cached.tweet,
@@ -85,14 +87,14 @@ class CauseRestController(
         }
 
         return try {
-            val aiResponse = geminiAiService.generateEmail(cause, senator, request)
+            val aiResponse = geminiAiService.generateEmail(cause, politician, request)
             if (aiResponse != null) {
                 // 2. Persist to cache
                 val cachedAppeal =
                         CachedAppeal(
                                 causeId = id,
-                                senatorIdInfoHash = sortKey,
-                                senatorId = request.senatorId,
+                                politicianIdInfoHash = sortKey,
+                                politicianId = request.politicianId,
                                 infoHash = infoHash,
                                 subject = aiResponse.subject,
                                 body = aiResponse.body,
@@ -112,18 +114,19 @@ class CauseRestController(
         } catch (e: Exception) {
             // 3. Fallback to "anonymous" cache if AI fails and this wasn't already an anonymous request
             if (infoHash != "anonymous") {
-                val anonymousSortKey = "${request.senatorId}#anonymous"
+                val anonymousSortKey = "${request.politicianId}#anonymous"
                 val fallback =
                         cachedAppealsTable.getItem(
-                                software.amazon.awssdk.enhanced.dynamodb.Key.builder()
+                                Key.builder()
                                         .partitionValue(id)
                                         .sortValue(anonymousSortKey)
                                         .build()
                         )
                 if (fallback != null) {
+                    val title = if (politician.type?.equals("Representative", ignoreCase = true) == true) "representative" else "senator"
                     return EmailResponse(
-                            toAddress = senator.email
-                                            ?: "senator.${senator.name?.replace(" ", ".")?.lowercase()}@aph.gov.au",
+                            toAddress = politician.email
+                                            ?: "${title}.${politician.name?.replace(" ", ".")?.lowercase()}@aph.gov.au",
                             subject = fallback.subject ?: "",
                             body = fallback.body ?: "",
                             tweet = fallback.tweet,

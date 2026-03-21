@@ -3,10 +3,9 @@ package click.repwrite
 import click.repwrite.controller.CauseRestController
 import click.repwrite.ai.GeminiAiService
 import click.repwrite.model.Cause
-import click.repwrite.model.Senator
 import click.repwrite.model.CachedAppeal
-import click.repwrite.model.EmailRequest
 import click.repwrite.model.EmailResponse
+import click.repwrite.model.Politician
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -29,7 +28,7 @@ class CauseRestControllerTest {
     private lateinit var mockMvc: MockMvc
     private val enhancedClient = mockk<DynamoDbEnhancedClient>(relaxed = true)
     private val causesTable = mockk<DynamoDbTable<Cause>>(relaxed = true)
-    private val senatorsTable = mockk<DynamoDbTable<Senator>>(relaxed = true)
+    private val politicansTable = mockk<DynamoDbTable<Politician>>(relaxed = true)
     private val cachedAppealsTable = mockk<DynamoDbTable<CachedAppeal>>(relaxed = true)
     private val geminiAiService = mockk<GeminiAiService>(relaxed = true)
 
@@ -40,7 +39,7 @@ class CauseRestControllerTest {
     @BeforeEach
     fun setup() {
         every { enhancedClient.table("CausesTable", any<TableSchema<Cause>>()) } returns causesTable
-        every { enhancedClient.table("SenatorsTable", any<TableSchema<Senator>>()) } returns senatorsTable
+        every { enhancedClient.table("PoliticiansTable", any<TableSchema<Politician>>()) } returns politicansTable
         every { enhancedClient.table("CachedAppealsTable", any<TableSchema<CachedAppeal>>()) } returns cachedAppealsTable
 
         val mockCausePageIterable = mockk<PageIterable<Cause>>(relaxed = true)
@@ -85,18 +84,19 @@ class CauseRestControllerTest {
     @Test
     fun `should generate email via AI`() {
         val senatorId = "POC-123"
-        val mockSenator = Senator(
+        val mockSenator = Politician(
             id = senatorId,
             name = "Senator Pocock",
             email = "senator.pocock@aph.gov.au",
             birthYear = 1970,
             party = "Independent",
-            state = "ACT",
+            type = "Senator",
+            electorate = "ACT",
             firstYearInOffice = 2022,
             background = ""
         )
         
-        every { senatorsTable.getItem(any<software.amazon.awssdk.enhanced.dynamodb.Key>()) } answers {
+        every { politicansTable.getItem(any<software.amazon.awssdk.enhanced.dynamodb.Key>()) } answers {
             val key = it.invocation.args[0] as software.amazon.awssdk.enhanced.dynamodb.Key
             if (key.partitionKeyValue().s() == senatorId) mockSenator else null
         }
@@ -107,7 +107,7 @@ class CauseRestControllerTest {
         val jsonRequest = """
             {
                 "causeId": "1",
-                "senatorId": "$senatorId",
+                "politicianId": "$senatorId",
                 "name": "John Doe",
                 "gender": "Male",
                 "age": 30,

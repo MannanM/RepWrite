@@ -149,15 +149,15 @@
             display: none;
         }
 
-        /* Senator Cards (Replacing Table for Mobile) */
-        .senator-grid {
+        /* Politician Cards (Replacing Table for Mobile) */
+        .politician-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 16px;
             margin-top: 20px;
         }
 
-        .senator-card-item {
+        .politician-card-item {
             border: 2px solid var(--border-color);
             border-radius: 10px;
             padding: 16px;
@@ -167,18 +167,18 @@
             background: #fff;
         }
 
-        .senator-card-item:hover {
+        .politician-card-item:hover {
             border-color: #93c5fd;
             background: #eff6ff;
         }
 
-        .senator-card-item.selected {
+        .politician-card-item.selected {
             border-color: var(--primary-color);
             background: #eff6ff;
             box-shadow: 0 4px 12px var(--focus-ring);
         }
 
-        .senator-name {
+        .politician-name {
             font-weight: 600;
             font-size: 1.1rem;
             margin-bottom: 8px;
@@ -300,11 +300,11 @@
     <div id="cause-content" class="cause-content"></div>
 </div>
 
-<!-- STEP 2: PERSONAL DETAILS (Moved up) -->
+<!-- STEP 2: PERSONAL DETAILS -->
 <div id="personal-details-section" class="card hidden">
     <h3 class="step-title"><span class="step-number">2</span> Your Details (Optional)</h3>
     <p class="helper-text">
-        Providing these details helps craft an authentic appeal reflecting your unique voice. Set this once, and easily switch Senators below.
+        Providing these details helps craft an authentic appeal reflecting your unique voice. Set this once, and easily switch representatives below.
     </p>
     <div class="input-grid">
         <div>
@@ -335,37 +335,23 @@
     <textarea id="importance" rows="3" placeholder="Briefly share a personal connection or reason..."></textarea>
 </div>
 
-<!-- STEP 3: FIND SENATORS -->
-<div id="senator-finder-search" class="card hidden">
-    <h3 class="step-title"><span class="step-number">3</span> Find & Select Your Senator</h3>
+<!-- STEP 3: FIND REPRESENTATIVES -->
+<div id="politician-finder-search" class="card hidden">
+    <h3 class="step-title"><span class="step-number">3</span> Find Your Representative</h3>
     <p class="helper-text">
-        Search by postcode or select your state. Click on a representative to generate a customized appeal.
+        Enter your postcode to find your representatives. Click on a representative to generate a customised appeal.
     </p>
     <div class="input-grid">
         <div>
             <label for="postcode">Postcode</label>
             <input type="text" id="postcode" maxlength="4" placeholder="e.g. 2000">
         </div>
-        <div>
-            <label for="stateDropdown">Or Select State</label>
-            <select id="stateDropdown">
-                <option value="">-- Select State --</option>
-                <option value="NSW">New South Wales</option>
-                <option value="VIC">Victoria</option>
-                <option value="QLD">Queensland</option>
-                <option value="SA">South Australia</option>
-                <option value="WA">Western Australia</option>
-                <option value="TAS">Tasmania</option>
-                <option value="ACT">Australian Capital Territory</option>
-                <option value="NT">Northern Territory</option>
-            </select>
-        </div>
     </div>
 
-    <!-- Senator Grid (Dynamic) -->
-    <div id="senator-container" class="hidden" style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-        <h4 id="senator-title" style="margin-bottom: 8px;">Select a Senator</h4>
-        <div id="senator-grid" class="senator-grid"></div>
+    <!-- Politician Grid (Dynamic) -->
+    <div id="politician-container" class="hidden" style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+        <h4 id="politician-title" style="margin-bottom: 8px;">Select a Representative</h4>
+        <div id="politician-grid" class="politician-grid"></div>
 
         <button id="submitEmail" class="btn-full hidden">✨ Generate Appeal</button>
     </div>
@@ -375,11 +361,11 @@
 <div id="email-result-section" class="card hidden" style="border-top: 6px solid var(--success-color);">
     <h3 class="step-title" style="color: var(--success-color);"><span class="step-number" style="background: var(--success-color);">4</span> Your Generated Appeal</h3>
 
-    <p style="margin-bottom: 24px;">Review your generated messages below. You can always scroll up, select a different Senator, and generate another unique message instantly.</p>
+    <p style="margin-bottom: 24px;">Review your generated messages below. You can always scroll up, select a different representative, and generate another unique message instantly.</p>
 
     <!-- Email Output -->
     <div style="margin-bottom: 30px;">
-        <h4 style="color: var(--primary-color);">✉️ Email to Senator</h4>
+        <h4 style="color: var(--primary-color);">✉️ Email to Representative</h4>
         <p style="margin: 4px 0;">
             <strong>To:</strong> <span id="emailTo"></span>
             <button id="copyToBtn" class="copy-btn-inline">Copy</button>
@@ -398,7 +384,7 @@
     <!-- X / Twitter Output -->
     <div style="margin-bottom: 30px;">
         <h4 style="color: var(--twitter-color);">🐦 𝕏 (Twitter) Post</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Post this to raise public awareness and tag your Senator.</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Post this to raise public awareness and tag your representative.</p>
         <div id="tweetContent" class="output-box output-tweet"></div>
         <button id="copyTweetBtn" class="btn-twitter">Copy Tweet</button>
     </div>
@@ -406,7 +392,7 @@
     <!-- Phone Script Output -->
     <div>
         <h4 style="color: var(--phone-color);">📞 Phone Script</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Call the Senator's office and read this brief message to their staff.</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Call their office and read this brief message to their staff.</p>
         <div id="phoneLineContent" class="output-box output-phone"></div>
         <button id="copyPhoneBtn" class="btn-phone">Copy Script</button>
     </div>
@@ -425,13 +411,12 @@
         const causeContent = document.getElementById('cause-content');
 
         const personalDetailsSection = document.getElementById('personal-details-section');
-        const senatorSearch = document.getElementById('senator-finder-search');
+        const politicianSearch = document.getElementById('politician-finder-search');
         const postcodeField = document.getElementById('postcode');
-        const stateDropdown = document.getElementById('stateDropdown');
 
-        const senatorContainer = document.getElementById('senator-container');
-        const senatorGrid = document.getElementById('senator-grid');
-        const senatorTitle = document.getElementById('senator-title');
+        const politicianContainer = document.getElementById('politician-container');
+        const politicianGrid = document.getElementById('politician-grid');
+        const politicianTitle = document.getElementById('politician-title');
 
         const submitEmailBtn = document.getElementById('submitEmail');
         const emailResultSection = document.getElementById('email-result-section');
@@ -442,7 +427,7 @@
         const tweetContent = document.getElementById('tweetContent');
         const phoneLineContent = document.getElementById('phoneLineContent');
 
-        let selectedSenator = null;
+        let selectedPoliticianId = null;
         let currentEmail = null;
 
         async function loadCauses() {
@@ -470,7 +455,7 @@
             if (!causeId) {
                 causeContent.style.display = 'none';
                 personalDetailsSection.classList.add('hidden');
-                senatorSearch.classList.add('hidden');
+                politicianSearch.classList.add('hidden');
                 emailResultSection.classList.add('hidden');
                 return;
             }
@@ -485,7 +470,7 @@
 
                     // Unhide subsequent steps
                     personalDetailsSection.classList.remove('hidden');
-                    senatorSearch.classList.remove('hidden');
+                    politicianSearch.classList.remove('hidden');
 
                     // Scroll nicely to details
                     setTimeout(() => {
@@ -497,31 +482,23 @@
             }
         });
 
-        function getFullStateName(stateCode) {
-            const states = {
-                "NSW": "New South Wales", "VIC": "Victoria", "QLD": "Queensland",
-                "SA": "South Australia", "WA": "Western Australia", "TAS": "Tasmania",
-                "ACT": "Australian Capital Territory", "NT": "Northern Territory"
-            };
-            return states[stateCode] || stateCode;
-        }
 
-        function updateSenators(data, stateCode) {
-            senatorGrid.innerHTML = '';
+
+        function updatePoliticians(data, electorateName) {
+            politicianGrid.innerHTML = '';
             submitEmailBtn.classList.add('hidden');
-            selectedSenator = null;
+            selectedPoliticianId = null;
 
             if (data.length > 0) {
-                senatorContainer.classList.remove('hidden');
-                const fullState = getFullStateName(stateCode);
-                senatorTitle.textContent = `Current ${fullState} Senators`;
+                politicianContainer.classList.remove('hidden');
+                politicianTitle.textContent = electorateName ? `Representatives for ${electorateName}` : 'Select a Representative';
             } else {
-                senatorContainer.classList.add('hidden');
+                politicianContainer.classList.add('hidden');
                 return;
             }
 
-            data.forEach(senator => {
-                const partyClass = (senator.party || '').toLowerCase();
+            data.forEach(p => {
+                const partyClass = (p.party || '').toLowerCase();
                 let badgeClass = 'party-other';
                 if (partyClass.includes('labor')) badgeClass = 'party-labor';
                 else if (partyClass.includes('liberal')) badgeClass = 'party-liberal';
@@ -531,46 +508,42 @@
                 else if (partyClass.includes('one nation')) badgeClass = 'party-onenation';
 
                 const card = document.createElement('div');
-                card.className = 'senator-card-item';
+                card.className = 'politician-card-item';
                 card.innerHTML = `
-                    <div class="senator-name">${senator.name}</div>
-                    <span class="party-badge ${badgeClass}">${senator.party}</span>
+                    <div class="politician-name">${p.name}</div>
+                    <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;">${p.type || ''}</div>
+                    <span class="party-badge ${badgeClass}">${p.party}</span>
                 `;
 
                 card.addEventListener('click', () => {
                     // Deselect others
-                    document.querySelectorAll('.senator-card-item').forEach(c => c.classList.remove('selected'));
+                    document.querySelectorAll('.politician-card-item').forEach(c => c.classList.remove('selected'));
                     // Select this
                     card.classList.add('selected');
-                    selectedSenator = senator.id;
+                    selectedPoliticianId = p.id;
 
                     // Show and enable generate button
                     submitEmailBtn.classList.remove('hidden');
                 });
 
-                senatorGrid.appendChild(card);
+                politicianGrid.appendChild(card);
             });
         }
 
         async function fetchByPostcode(postcode) {
             if (postcode.length !== 4) {
-                senatorContainer.classList.add('hidden');
+                politicianContainer.classList.add('hidden');
                 return;
             }
             try {
                 const today = new Date().toISOString().split('T')[0];
-                const res = await fetch(`/api/postcodes/${postcode}/senators?_date=${today}`);
+                const res = await fetch(`/api/postcodes/${postcode}/politicians?_date=${today}`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.length > 0) {
-                        const stateMap = {
-                            "New South Wales": "NSW", "Victoria": "VIC", "Queensland": "QLD",
-                            "South Australia": "SA", "Western Australia": "WA", "Tasmania": "TAS",
-                            "Australian Capital Territory": "ACT", "Northern Territory": "NT"
-                        };
-                        updateSenators(data, stateMap[data[0].state] || data[0].state);
+                        updatePoliticians(data, data[0].electorate);
                     } else {
-                        updateSenators(data, "");
+                        updatePoliticians(data, "");
                     }
                 }
             } catch (err) {
@@ -578,44 +551,21 @@
             }
         }
 
-        async function fetchByState(state) {
-            if (!state) {
-                senatorContainer.classList.add('hidden');
-                return;
-            }
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const res = await fetch(`/api/states/${state}/senators?_date=${today}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    updateSenators(data, state);
-                    postcodeField.value = '';
-                }
-            } catch (err) {
-                console.error("Error fetching state", err);
-            }
-        }
-
         postcodeField.addEventListener('input', (e) => {
-            stateDropdown.value = '';
             if(e.target.value.length === 4) {
                 fetchByPostcode(e.target.value);
             } else {
-                senatorContainer.classList.add('hidden');
+                politicianContainer.classList.add('hidden');
             }
         });
 
-        stateDropdown.addEventListener('change', (e) => {
-            fetchByState(e.target.value);
-        });
-
         submitEmailBtn.addEventListener('click', async () => {
-            if (!selectedSenator) return;
+            if (!selectedPoliticianId) return;
 
             const causeId = causesDropdown.value;
             const requestData = {
                 causeId: causeId,
-                senatorId: selectedSenator,
+                politicianId: selectedPoliticianId,
                 name: document.getElementById('userName').value || null,
                 gender: document.getElementById('userGender').value || null,
                 age: parseInt(document.getElementById('userAge').value) || null,
