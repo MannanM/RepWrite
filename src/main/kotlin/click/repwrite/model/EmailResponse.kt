@@ -5,5 +5,6 @@ data class EmailResponse(
         val subject: String,
         val body: String,
         val tweet: String? = null,
-        val phoneLine: String? = null
+        val phoneLine: String? = null,
+        val phoneNumber: String? = null
 )

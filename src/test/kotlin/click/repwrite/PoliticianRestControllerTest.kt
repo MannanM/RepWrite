@@ -4,6 +4,7 @@ import click.repwrite.ai.GeminiAiService
 import click.repwrite.config.RepWriteProperties
 import click.repwrite.controller.PoliticianRestController
 import click.repwrite.model.Politician
+import click.repwrite.service.AphContentService
 import click.repwrite.service.WikiContentService
 import software.amazon.awssdk.services.ssm.SsmClient
 import org.springframework.http.HttpHeaders
@@ -34,6 +35,7 @@ class PoliticianRestControllerTest {
     private val geminiAiService = mockk<GeminiAiService>()
     private val repWriteProperties = RepWriteProperties()
     private val ssmClient = mockk<SsmClient>(relaxed = true)
+    private val aphContentService = mockk<AphContentService>(relaxed = true)
 
     @BeforeEach
     fun setup() {
@@ -54,7 +56,7 @@ class PoliticianRestControllerTest {
         repWriteProperties.password = "pass"
 
         mockMvc = MockMvcBuilders.standaloneSetup(
-            PoliticianRestController(enhancedClient, wikiContentService, geminiAiService, repWriteProperties, ssmClient)
+            PoliticianRestController(enhancedClient, wikiContentService, geminiAiService, repWriteProperties, ssmClient, aphContentService)
         ).build()
     }
 

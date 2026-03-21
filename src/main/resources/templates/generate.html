@@ -203,7 +203,7 @@
         .party-onenation { background-color: #F36D24; }
         .party-other { background-color: #888; }
 
-        button {
+        button, .btn-phone {
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -218,6 +218,7 @@
             justify-content: center;
             gap: 8px;
             width: auto;
+            text-decoration: none;
         }
 
         button:hover { background-color: var(--primary-hover); }
@@ -394,14 +395,17 @@
         <h4 style="color: var(--phone-color);">📞 Phone Script</h4>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Call their office and read this brief message to their staff.</p>
         <div id="phoneLineContent" class="output-box output-phone"></div>
-        <button id="copyPhoneBtn" class="btn-phone">Copy Script</button>
+        <div class="action-group">
+            <a id="callPoliticianBtn" href="#" class="btn-phone hidden">Call Representative</a>
+            <button id="copyPhoneBtn" class="btn-secondary">Copy Script</button>
+        </div>
     </div>
 </div>
 
 <div style="text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid var(--border-color); color: var(--text-muted);">
     <p>Support this <a href="https://github.com/MannanM/RepWrite" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">open source</a> project:</p>
     <a href="https://buymeacoffee.com/mannanm" target="_blank" style="display: inline-block; transition: transform 0.2s;">
-        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=mannanm&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a Coffee" style="height: 40px;">
+        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=mannanm&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a Beer" style="height: 40px;">
     </a>
 </div>
 
@@ -426,6 +430,7 @@
         const emailBody = document.getElementById('emailBody');
         const tweetContent = document.getElementById('tweetContent');
         const phoneLineContent = document.getElementById('phoneLineContent');
+        const callPoliticianBtn = document.getElementById('callPoliticianBtn');
 
         let selectedPoliticianId = null;
         let currentEmail = null;
@@ -511,7 +516,7 @@
                 card.className = 'politician-card-item';
                 card.innerHTML = `
                     <div class="politician-name">${p.name}</div>
-                    <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;">${p.type || ''}</div>
+                    <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;">${p.type || ''} - ${p.electorate || ''}</div>
                     <span class="party-badge ${badgeClass}">${p.party}</span>
                 `;
 
@@ -594,6 +599,13 @@
                     emailBody.textContent = currentEmail.body;
                     tweetContent.textContent = currentEmail.tweet || 'No tweet generated.';
                     phoneLineContent.textContent = currentEmail.phoneLine || 'No phone script generated.';
+
+                    if (currentEmail.phoneNumber && currentEmail.phoneNumber.trim() !== "") {
+                        callPoliticianBtn.href = `tel:${currentEmail.phoneNumber}`;
+                        callPoliticianBtn.classList.remove('hidden');
+                    } else {
+                        callPoliticianBtn.classList.add('hidden');
+                    }
 
                     emailResultSection.classList.remove('hidden');
                     setTimeout(() => {
