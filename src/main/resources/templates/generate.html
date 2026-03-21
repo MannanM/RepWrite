@@ -511,7 +511,7 @@
                 card.className = 'politician-card-item';
                 card.innerHTML = `
                     <div class="politician-name">${p.name}</div>
-                    <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;">${p.type || ''}</div>
+                    <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;">${p.type || ''} - ${p.electorate || ''}</div>
                     <span class="party-badge ${badgeClass}">${p.party}</span>
                 `;
 
