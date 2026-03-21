@@ -81,7 +81,7 @@ class GeminiAiService(
                 - **Cause Detail:** ${cause.content}
 
                 **User Details (The writer):**
-                ${userDetails.name?.let { "- **Name:** $it" } ?: "- **Name:** A concerned constituent"}
+                ${userDetails.name?.let { "- **Name:** $it" } ?: ""}
                 ${userDetails.gender?.let { "- **Gender:** $it" } ?: ""}
                 ${userDetails.age?.let { "- **Age:** $it" } ?: ""}
                 ${userDetails.occupation?.let { "- **Occupation:** $it" } ?: ""}
@@ -92,7 +92,7 @@ class GeminiAiService(
 
                 **Constraints & Guidelines:**
                 - **Email Tone:** Human, grounded, and polite but urgent. Avoid sounding like an automated template, overly dramatic, or academic.
-                - **Email Length:** Keep it concise, **2-3 paragraphs maximum**.
+                - **Email Length:** Keep it concise, body **2-3 paragraphs maximum** excluding salutation and sign-off.
                 - **Call to Action (CTA):** The email MUST end with a clear, specific request to the $title (e.g., asking them to support/oppose a policy, raise the issue in parliament, or vote a certain way).
                 - **Tweet:** A short, impactful post for X (Twitter) mentioning the personal importance of the cause. Include 1-2 relevant hashtags. Max 280 characters.
                 - **Phone Script:** A punchy **two-sentence** script the user can read to the $title's staff (Sentence 1: Who I am and why I care. Sentence 2: The specific action I want the $title to take).
@@ -105,7 +105,7 @@ class GeminiAiService(
                 Return ONLY a valid, raw JSON object. Use the exact structure below:
                 {
                         "subject": "A compelling, natural subject line (avoid generic 'A concerned citizen' titles)",
-                        "body": "The full email, maximum 2-3 paragraphs, including a respectful salutation and sign-off",
+                        "body": "The full email, maximum 2-3 paragraph body plus a respectful salutation and sign-off",
                         "tweet": "The short tweet content",
                         "phoneLine": "The two-sentence phone script"
                 }
@@ -119,7 +119,8 @@ class GeminiAiService(
                                 subject = it.subject,
                                 body = it.body,
                                 tweet = it.tweet,
-                                phoneLine = it.phoneLine
+                                phoneLine = it.phoneLine,
+                                phoneNumber = politician.phone
                         )
                 }
         }

@@ -154,7 +154,7 @@ class AphContentServiceTest {
         politician?.email shouldBe "senator.allman-payne@aph.gov.au"
         politician?.phone shouldBe "0749720380"
         politician?.handle shouldBe "@senatorpennyqld"
-        politician?.party shouldBe "Australian Greens"
+        politician?.party shouldBe "Greens"
     }
 
     @Test
