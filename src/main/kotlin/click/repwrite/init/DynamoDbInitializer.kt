@@ -11,8 +11,6 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException
 import tools.jackson.databind.ObjectMapper
-import tools.jackson.core.type.TypeReference
-import java.io.InputStream
 
 @Component
 class DynamoDbInitializer(
@@ -29,52 +27,63 @@ class DynamoDbInitializer(
     }
 
     private fun initPoliticiansData() {
-        val tableName = "PoliticiansTable"
-        val politicianTable = enhancedClient.table(tableName, TableSchema.fromBean(Politician::class.java))
+        val table = enhancedClient.table("PoliticiansTable", TableSchema.fromBean(Politician::class.java))
 
         try {
-            politicianTable.createTable()
-            logger.info("Table $tableName created.")
+            table.describeTable()
+            logger.info("Table 'PoliticiansTable' already exists.")
+        } catch (e: ResourceNotFoundException) {
+            logger.info("Table 'PoliticiansTable' does not exist. Creating...")
+            table.createTable()
+            logger.info("Table 'PoliticiansTable' created.")
+        }
 
-            val inputStream: InputStream? = javaClass.getResourceAsStream("/data/politicians.json")
+        val results = table.scan().items().iterator()
+        if (!results.hasNext()) {
+            logger.info("Loading politician data from JSON...")
+            val inputStream = DynamoDbInitializer::class.java.getResourceAsStream("/data/politicians.json")
             if (inputStream != null) {
-                val politicians: List<Politician> = objectMapper.readValue(inputStream, object : TypeReference<List<Politician>>() {})
-                politicians.forEach { politicianTable.putItem(it) }
-                logger.info("Successfully loaded ${politicians.size} politicians from politicians.json into $tableName.")
+                val senatorListType =
+                    objectMapper.typeFactory.constructCollectionType(List::class.java, Politician::class.java)
+                val senators: List<Politician> = objectMapper.readValue(inputStream, senatorListType)
+                senators.forEach { table.putItem(it) }
+                logger.info("Inserted ${senators.size} politicians.")
             } else {
-                logger.warn("politicians.json not found in resources.")
+                logger.error("Could not find politicians.json in classpath.")
             }
-        } catch (e: Exception) {
-            if (e.message?.contains("Table already exists") == true) {
-                logger.info("Table $tableName already exists.")
-            } else {
-                logger.error("Error initializing $tableName: ${e.message}", e)
-            }
+        } else {
+            logger.info("Politician data already present.")
         }
     }
 
     private fun initCausesData() {
-        val tableName = "CausesTable"
-        val causeTable = enhancedClient.table(tableName, TableSchema.fromBean(Cause::class.java))
-
         try {
-            causeTable.createTable()
-            logger.info("Table $tableName created.")
+            val table = enhancedClient.table("CausesTable", TableSchema.fromBean(Cause::class.java))
+            try {
+                table.describeTable()
+                logger.info("Table 'CausesTable' already exists.")
+            } catch (e: ResourceNotFoundException) {
+                logger.info("Table 'CausesTable' does not exist. Creating...")
+                table.createTable()
+                logger.info("Table 'CausesTable' created.")
+            }
 
-            val inputStream: InputStream? = javaClass.getResourceAsStream("/data/causes.json")
-            if (inputStream != null) {
-                val causes: List<Cause> = objectMapper.readValue(inputStream, object : TypeReference<List<Cause>>() {})
-                causes.forEach { causeTable.putItem(it) }
-                logger.info("Successfully loaded ${causes.size} causes from causes.json into $tableName.")
-            } else {
-                logger.warn("causes.json not found in resources.")
+            val results = table.scan().items().iterator()
+            if (!results.hasNext()) {
+                logger.info("Loading causes data from JSON...")
+                val inputStream = DynamoDbInitializer::class.java.getResourceAsStream("/data/causes.json")
+                if (inputStream != null) {
+                    val causeListType =
+                        objectMapper.typeFactory.constructCollectionType(List::class.java, Cause::class.java)
+                    val causes: List<Cause> = objectMapper.readValue(inputStream, causeListType)
+                    causes.forEach { table.putItem(it) }
+                    logger.info("Seeded ${causes.size} causes.")
+                } else {
+                    logger.error("Could not find causes.json in classpath.")
+                }
             }
         } catch (e: Exception) {
-            if (e.message?.contains("Table already exists") == true) {
-                logger.info("Table $tableName already exists.")
-            } else {
-                logger.error("Error initializing $tableName: ${e.message}", e)
-            }
+            logger.error("Failed to initialize CausesTable: ${e.message}")
         }
     }
 
