@@ -1,9 +1,9 @@
 package click.repwrite.ai
 
+import click.repwrite.model.Politician
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -13,7 +13,6 @@ import software.amazon.awssdk.services.ssm.SsmClient
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest
 import software.amazon.awssdk.services.ssm.model.GetParameterResponse
 import software.amazon.awssdk.services.ssm.model.Parameter
-import click.repwrite.model.Senator
 import tools.jackson.databind.ObjectMapper
 
 class GeminiAiServiceTest {
@@ -73,11 +72,12 @@ class GeminiAiServiceTest {
         val service =
                 GeminiAiService(restTemplateBuilder, properties, ssmClient, objectMapper)
         val senator =
-                Senator(
+            Politician(
                         id = "1",
                         name = "Test Senator",
                         party = "Labor",
-                        state = "NSW",
+                        type = "Senator",
+                        electorate = "NSW",
                         birthYear = 1970,
                         firstYearInOffice = 2010
                 )
@@ -100,7 +100,7 @@ class GeminiAiServiceTest {
         every { objectMapper.readValue("This is a summary.", String::class.java) } returns
                 "This is a summary."
 
-        val summary = service.summarizeSenatorBackground(wikiContent, senator)
+        val summary = service.summarizePoliticianBackground(wikiContent, senator)
 
         summary shouldBe "This is a summary."
     }

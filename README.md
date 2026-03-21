@@ -2,9 +2,7 @@
 
 RepWrite is an open-source platform designed to empower citizens to communicate effectively with their political representatives. By leveraging AI, RepWrite helps users craft personalized, respectful, and compelling appeals tailored to specific political causes and the unique backgrounds of their Senators.
 
-## For Everyone (Non-Technical)
-
-### What is RepWrite?
+## What is RepWrite?
 In a healthy democracy, your voice matters. But sometimes, it's hard to know how to start a conversation with your representative. Generic form letters often get ignored. RepWrite helps you bridge this gap.
 
 ### How it Works
@@ -23,7 +21,7 @@ In a healthy democracy, your voice matters. But sometimes, it's hard to know how
 -   **Frontend**: Thymeleaf, Vanilla CSS, Javascript
 -   **Database**: DynamoDB (initialized via `DynamoDbInitializer`)
 -   **AI Integration**: Google Gemini AI
--   **Infrastructure**: AWS (CloudFormation, EC2, Parameter Store)
+-   **Infrastructure**: AWS (CloudFormation, EC2, Secrets Manager)
 
 ### Prerequisites
 -   Java 21

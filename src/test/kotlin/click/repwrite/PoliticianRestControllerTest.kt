@@ -2,8 +2,8 @@ package click.repwrite
 
 import click.repwrite.ai.GeminiAiService
 import click.repwrite.config.RepWriteProperties
-import click.repwrite.controller.SenatorRestController
-import click.repwrite.model.Senator
+import click.repwrite.controller.PoliticianRestController
+import click.repwrite.model.Politician
 import click.repwrite.service.WikiContentService
 import software.amazon.awssdk.services.ssm.SsmClient
 import org.springframework.http.HttpHeaders
@@ -25,11 +25,11 @@ import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable
 
-class SenatorRestControllerTest {
+class PoliticianRestControllerTest {
 
     private lateinit var mockMvc: MockMvc
     private val enhancedClient = mockk<DynamoDbEnhancedClient>(relaxed = true)
-    private val table = mockk<DynamoDbTable<Senator>>(relaxed = true)
+    private val table = mockk<DynamoDbTable<Politician>>(relaxed = true)
     private val wikiContentService = mockk<WikiContentService>()
     private val geminiAiService = mockk<GeminiAiService>()
     private val repWriteProperties = RepWriteProperties()
@@ -38,37 +38,37 @@ class SenatorRestControllerTest {
     @BeforeEach
     fun setup() {
         every {
-            enhancedClient.table("SenatorsTable", any<TableSchema<Senator>>())
+            enhancedClient.table("PoliticiansTable", any<TableSchema<Politician>>())
         } returns table
 
-        val mockPageIterable = mockk<PageIterable<Senator>>(relaxed = true)
+        val mockPageIterable = mockk<PageIterable<Politician>>(relaxed = true)
 
         every { table.scan() } returns mockPageIterable
         every { mockPageIterable.items() } returns SdkIterable {
             listOf(
-                Senator(id = "BRAG-1", name = "Andrew Bragg", email = "senator.bragg@aph.gov.au", birthYear = 1984, party = "Liberal", state = "New South Wales", firstYearInOffice = 2019, background = ""),
-                Senator(id = "WONG-1", name = "Penny Wong", email = "senator.wong@aph.gov.au", birthYear = 1968, party = "Labor", state = "South Australia", firstYearInOffice = 2002, background = "")
-            ).iterator() as MutableIterator<Senator?>
+                Politician(id = "BRAG-1", name = "Andrew Bragg", email = "senator.bragg@aph.gov.au", birthYear = 1984, party = "Liberal", type = "Senator", electorate = "New South Wales", firstYearInOffice = 2019, background = ""),
+                Politician(id = "WONG-1", name = "Penny Wong", email = "senator.wong@aph.gov.au", birthYear = 1968, party = "Labor", type = "Senator", electorate = "South Australia", firstYearInOffice = 2002, background = "")
+            ).iterator() as MutableIterator<Politician?>
         }
 
         repWriteProperties.password = "pass"
 
         mockMvc = MockMvcBuilders.standaloneSetup(
-            SenatorRestController(enhancedClient, wikiContentService, geminiAiService, repWriteProperties, ssmClient)
+            PoliticianRestController(enhancedClient, wikiContentService, geminiAiService, repWriteProperties, ssmClient)
         ).build()
     }
 
     @Test
     fun `should enrich senator background with correct auth`() {
-        val senator = Senator(id = "BRAG-1", name = "Andrew Bragg", wikiUrl = "http://wiki.com")
+        val senator = Politician(id = "BRAG-1", name = "Andrew Bragg", wikiUrl = "http://wiki.com")
         every { table.getItem(any<Key>()) } returns senator
         every { wikiContentService.fetchAndCleanWikiContent(any()) } returns "Some content"
-        every { geminiAiService.summarizeSenatorBackground(any(), any()) } returns "Summarized background"
-        every { table.updateItem(any<Senator>()) } returns senator
+        every { geminiAiService.summarizePoliticianBackground(any(), any()) } returns "Summarized background"
+        every { table.updateItem(any<Politician>()) } returns senator
 
         val authHeader = "Basic " + Base64.getEncoder().encodeToString("admin:pass".toByteArray())
 
-        mockMvc.perform(post("/api/senators/BRAG-1")
+        mockMvc.perform(post("/api/politicians/BRAG-1")
             .header(HttpHeaders.AUTHORIZATION, authHeader))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.background").value("Summarized background"))
@@ -76,21 +76,21 @@ class SenatorRestControllerTest {
 
     @Test
     fun `should return 401 when enriching senator background without auth`() {
-        mockMvc.perform(post("/api/senators/BRAG-1"))
+        mockMvc.perform(post("/api/politicians/BRAG-1"))
             .andExpect(status().isUnauthorized)
     }
 
     @Test
     fun `should return 401 when enriching senator background with incorrect auth`() {
         val authHeader = "Basic " + Base64.getEncoder().encodeToString("admin:wrong".toByteArray())
-        mockMvc.perform(post("/api/senators/BRAG-1")
+        mockMvc.perform(post("/api/politicians/BRAG-1")
             .header(HttpHeaders.AUTHORIZATION, authHeader))
             .andExpect(status().isUnauthorized)
     }
 
     @Test
     fun `should return all senators`() {
-        mockMvc.perform(get("/api/senators"))
+        mockMvc.perform(get("/api/politicians"))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.length()").value(2))
@@ -110,14 +110,14 @@ class SenatorRestControllerTest {
     @Test
     fun `should return senators by postcode`() {
         // 2000 is NSW
-        mockMvc.perform(get("/api/postcodes/2000/senators"))
+        mockMvc.perform(get("/api/postcodes/2000/politicians"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].name").value("Andrew Bragg"))
     }
 
     @Test
     fun `should return empty list for invalid postcode`() {
-        mockMvc.perform(get("/api/postcodes/99999/senators"))
+        mockMvc.perform(get("/api/postcodes/99999/politicians"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.length()").value(0))
     }
