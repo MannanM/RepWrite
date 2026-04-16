@@ -128,7 +128,7 @@ class AphContentServiceTest {
                     </dl>
                 </div>
             </section>
-            <section id="t2-content-panel">
+            <section id="t2-content-panel" aria-label="Connect">
                 <dt>Email</dt>
                 <dd><a href="mailto:senator.allman-payne@aph.gov.au">senator.allman-payne@aph.gov.au</a></dd>
                 <dt>Social media</dt>
@@ -158,14 +158,36 @@ class AphContentServiceTest {
     }
 
     @Test
-    fun `should return empty map on fetch failure`() {
-        val url = "https://www.aph.gov.au/Senators_and_Members/Parliamentarian_Search_Results?page=1&q=&mem=1&ps=100"
+    fun `should prioritize facebook or youtube handle over personal website for Andrew Willcox`() {
+        val url = "https://www.aph.gov.au/Senators_and_Members/Parliamentarian?MPID=286535"
+        val html = """
+            <section id="t2-content-panel" aria-label="Connect">
+                <h3>Connect with Mr Andrew Willcox MP</h3>
+                <dl>
+                    <dt>Email</dt>
+                    <dd><a href="mailto:Andrew.Willcox.MP@aph.gov.au">Andrew.Willcox.MP@aph.gov.au</a></dd>
+                    <dt>Social media</dt>
+                    <dd>
+                        <a href="https://www.facebook.com/andrewwillcoxmp?mibextid=lqqj4d" title="Facebook"></a>
+                        <a href="/Senators_and_Members/Contact_Senator_or_Member?MPID=286535">Contact form</a>
+                    </dd>
+                    <dt>Websites</dt>
+                    <dd>
+                        <a href="https://www.andrewwillcox.com.au/">Personal website</a><br>
+                        <a href="https://www.youtube.com/@andrewwillcoxmp2483">Andrew Willcox MP on YouTube</a>
+                    </dd>
+                </dl>
+            </section>
+        """.trimIndent()
+
+        val response = mockk<ResponseEntity<String>>()
+        every { response.body } returns html
         every {
             restTemplate.exchange(URI.create(url), HttpMethod.GET, any(), String::class.java)
-        } throws RuntimeException("Network Error")
+        } returns response
 
-        val result = service.getRepresentative()
+        val politician = service.fetchPoliticianDetails(url)
 
-        result.isEmpty() shouldBe true
+        politician?.handle shouldBe "@andrewwillcoxmp2483"
     }
 }

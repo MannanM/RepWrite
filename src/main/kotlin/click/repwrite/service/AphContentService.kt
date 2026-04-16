@@ -74,14 +74,37 @@ class AphContentService(restTemplateBuilder: RestTemplateBuilder) {
         }
         val phone = phoneRaw?.let { cleanPhone(it) }
 
-        val twitter = doc.select("a[href*='twitter.com'], a[href*='x.com']").first()?.attr("href")
-        val instagram = doc.select("a[href*='instagram.com']").first()?.attr("href")
-        val bluesky = doc.select("a[href*='bsky.app']").first()?.attr("href")
+        val links = doc
+            .select("section[aria-label=Connect]")
+            .select("a")
+            .map {
+                it
+                    .attr("href")
+                    .trim() // Remove leading/trailing whitespace
+                    .replace("/www.", "/") // Remove www. for consistent handle extraction
+                    .replace("http://", "") // Remove http:// for consistent handle extraction
+                    .replace("https://", "") // Remove https:// for consistent handle extraction
+                    .replace("twitter.com", "x.com") // Handle Twitter rebrand to X
+                    .split("?")[0] // Remove query parameters for cleaner handle extraction
+                    .trimEnd('/') // Remove trailing slash for consistent handle extraction
+            }
 
-        val handleRaw = (twitter ?: instagram ?: bluesky)?.trim()
-        val handle = if (handleRaw != null) {
-            "@" + handleRaw.removeSuffix("/").substringAfterLast("/")
-        } else null
+        val handleRaw =
+            links.firstOrNull { it.startsWith("x.com") }
+                ?: links.firstOrNull { it.startsWith("instagram.com") }
+                ?: links.firstOrNull { it.startsWith("youtube.com") }
+                ?: links.firstOrNull { it.startsWith("bsky.app") }
+                ?: links.firstOrNull { it.startsWith("facebook.com") }
+
+        val handle = if (handleRaw == null) {
+            handleRaw
+        } else {
+            "@${
+                handleRaw
+                    .substringAfterLast("/")
+                    .trimStart('@')
+            }"
+        }
 
         return Politician(
             id = mpid.ifBlank { null },
