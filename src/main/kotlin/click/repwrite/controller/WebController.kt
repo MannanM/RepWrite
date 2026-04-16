@@ -18,4 +18,7 @@ class WebController {
 
     @GetMapping("/refresh-politicians")
     fun refreshPoliticiansPage() = "refresh-politicians"
+
+    @GetMapping("/appeal-statistics")
+    fun appealStatisticsPage() = "appeal-statistics"
 }
