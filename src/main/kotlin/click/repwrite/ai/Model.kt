@@ -31,7 +31,9 @@ internal data class GeminiApiResponse(
 )
 
 internal data class Candidate(
-    @JsonProperty("content") val content: Content
+    @JsonProperty("content") val content: Content,
+    @JsonProperty("finishReason") val finishReason: String?,
+    @JsonProperty("safetyRatings") val safetyRatings: List<SafetyRating>?,
 )
 
 internal data class PromptFeedback(
