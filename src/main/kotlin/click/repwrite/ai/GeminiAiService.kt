@@ -20,57 +20,58 @@ import tools.jackson.databind.ObjectMapper
 
 @Service
 class GeminiAiService(
-        restTemplateBuilder: RestTemplateBuilder,
-        geminiProperties: GeminiProperties,
-        ssmClient: SsmClient,
-        private val objectMapper: ObjectMapper,
+    restTemplateBuilder: RestTemplateBuilder,
+    geminiProperties: GeminiProperties,
+    ssmClient: SsmClient,
+    private val objectMapper: ObjectMapper,
 ) {
 
-        private val logger = LoggerFactory.getLogger(GeminiAiService::class.java)
-        private val restTemplate: RestTemplate = restTemplateBuilder.build()
-        private val headers = HttpHeaders()
-        private val uri: String
+    private val logger = LoggerFactory.getLogger(GeminiAiService::class.java)
+    private val restTemplate: RestTemplate = restTemplateBuilder.build()
+    private val headers = HttpHeaders()
+    private val uri: String
 
-        init {
-                headers.contentType = MediaType.APPLICATION_JSON
+    init {
+        headers.contentType = MediaType.APPLICATION_JSON
 
-                val apiKey =
-                        geminiProperties.apiKey
-                                ?: try {
-                                        logger.info(
-                                                "Gemini API key not found in properties, attempting to retrieve from AWS Parameter Store..."
-                                        )
-                                        ssmClient
-                                                .getParameter(
-                                                        GetParameterRequest.builder()
-                                                                .name("/gemini/api-key")
-                                                                .withDecryption(true)
-                                                                .build()
-                                                )
-                                                .parameter()
-                                                .value()
-                                } catch (e: Exception) {
-                                        logger.warn(
-                                                "Failed to retrieve Gemini API key from AWS Parameter Store: ${e.message}"
-                                        )
-                                        null
-                                }
+        val apiKey =
+            geminiProperties.apiKey
+                ?: try {
+                    logger.info(
+                        "Gemini API key not found in properties, attempting to retrieve from AWS Parameter Store..."
+                    )
+                    ssmClient
+                        .getParameter(
+                            GetParameterRequest.builder()
+                                .name("/gemini/api-key")
+                                .withDecryption(true)
+                                .build()
+                        )
+                        .parameter()
+                        .value()
+                } catch (e: Exception) {
+                    logger.warn(
+                        "Failed to retrieve Gemini API key from AWS Parameter Store: ${e.message}"
+                    )
+                    null
+                }
 
-                uri =
-                        UriComponentsBuilder.fromUriString(geminiProperties.url)
-                                .queryParam("key", apiKey ?: "")
-                                .toUriString()
-        }
+        uri =
+            UriComponentsBuilder.fromUriString(geminiProperties.url)
+                .queryParam("key", apiKey ?: "")
+                .toUriString()
+    }
 
-        fun generateEmail(
-                cause: Cause,
-                politician: Politician,
-                userDetails: EmailRequest
-        ): EmailResponse? {
-                val currentYear = java.time.LocalDate.now().year
-                val title = if (politician.type?.equals("Representative", ignoreCase = true) == true) "Representative" else "Senator"
-                val prompt =
-                        """
+    fun generateEmail(
+        cause: Cause,
+        politician: Politician,
+        userDetails: EmailRequest
+    ): EmailResponse? {
+        val currentYear = java.time.LocalDate.now().year
+        val title =
+            if (politician.type?.equals("Representative", ignoreCase = true) == true) "Representative" else "Senator"
+        val prompt =
+            """
                 You are an expert political campaigner helping an Australian citizen write to their $title to advocate for a specific cause.
 
                 **Context:**
@@ -111,24 +112,29 @@ class GeminiAiService(
                 }
         """.trimIndent()
 
-                return callGemini(prompt, InternalEmailResponse::class.java)?.let {
-                        val defaultTitle = if (politician.type?.equals("Representative", ignoreCase = true) == true) "representative" else "senator"
-                        EmailResponse(
-                                toAddress = politician.email
-                                                ?: "${defaultTitle}.${politician.name?.replace(" ", ".")?.lowercase()}@aph.gov.au",
-                                subject = it.subject,
-                                body = it.body,
-                                tweet = it.tweet,
-                                phoneLine = it.phoneLine,
-                                phoneNumber = politician.phone
-                        )
-                }
+        return callGemini(prompt, InternalEmailResponse::class.java)?.let {
+            val defaultTitle = if (politician.type?.equals(
+                    "Representative",
+                    ignoreCase = true
+                ) == true
+            ) "representative" else "senator"
+            EmailResponse(
+                toAddress = politician.email
+                    ?: "${defaultTitle}.${politician.name?.replace(" ", ".")?.lowercase()}@aph.gov.au",
+                subject = it.subject,
+                body = it.body,
+                tweet = it.tweet,
+                phoneLine = it.phoneLine,
+                phoneNumber = politician.phone
+            )
         }
+    }
 
-        fun summarizePoliticianBackground(wikiContent: String, politician: Politician): String? {
-                val title = if (politician.type?.equals("Representative", ignoreCase = true) == true) "Representative" else "Senator"
-                val prompt =
-                        """You are an expert political researcher and strategist helping to craft personalised advocacy appeals.
+    fun summarizePoliticianBackground(wikiContent: String, politician: Politician): String? {
+        val title =
+            if (politician.type?.equals("Representative", ignoreCase = true) == true) "Representative" else "Senator"
+        val prompt =
+            """You are an expert political researcher and strategist helping to craft personalised advocacy appeals.
 
         **$title Information (Already Known - DO NOT REPEAT):**
         - Name: ${politician.name}
@@ -157,84 +163,103 @@ class GeminiAiService(
         - Return ONLY the summary text, with no introductory, conversational, or concluding remarks.
         """.trimIndent()
 
-                return callGemini(prompt, String::class.java)
+        return callGemini(prompt, String::class.java)
+    }
+
+    private data class InternalEmailResponse(
+        val subject: String,
+        val body: String,
+        val tweet: String,
+        val phoneLine: String
+    )
+
+    private fun <T> callGemini(
+        prompt: String,
+        responseType: Class<T>,
+        file: java.io.File? = null
+    ): T? {
+        val parts = mutableListOf(Part(text = prompt))
+
+        if (file != null && file.exists()) {
+            try {
+                val bytes = java.nio.file.Files.readAllBytes(file.toPath())
+                val base64Data = java.util.Base64.getEncoder().encodeToString(bytes)
+                val mimeType =
+                    java.nio.file.Files.probeContentType(file.toPath())
+                        ?: "application/octet-stream"
+
+                parts.add(Part(inlineData = InlineData(mimeType, base64Data)))
+            } catch (e: Exception) {
+                logger.error(
+                    "Failed to read/encode file attachment for Gemini: ${e.message}",
+                    e
+                )
+            }
         }
 
-        private data class InternalEmailResponse(
-                val subject: String,
-                val body: String,
-                val tweet: String,
-                val phoneLine: String
-        )
+        val requestBody = GeminiApiRequest(contents = listOf(Content(parts = parts)))
+        val httpEntity = HttpEntity(requestBody, headers)
 
-        private fun <T> callGemini(
-                prompt: String,
-                responseType: Class<T>,
-                file: java.io.File? = null
-        ): T? {
-                val parts = mutableListOf(Part(text = prompt))
+        try {
+            val response =
+                restTemplate.postForObject(
+                    uri,
+                    httpEntity,
+                    GeminiApiResponse::class.java
+                )
 
-                if (file != null && file.exists()) {
-                        try {
-                                val bytes = java.nio.file.Files.readAllBytes(file.toPath())
-                                val base64Data = java.util.Base64.getEncoder().encodeToString(bytes)
-                                val mimeType =
-                                        java.nio.file.Files.probeContentType(file.toPath())
-                                                ?: "application/octet-stream"
-
-                                parts.add(Part(inlineData = InlineData(mimeType, base64Data)))
-                        } catch (e: Exception) {
-                                logger.error(
-                                        "Failed to read/encode file attachment for Gemini: ${e.message}",
-                                        e
-                                )
-                        }
-                }
-
-                val requestBody = GeminiApiRequest(contents = listOf(Content(parts = parts)))
-                val httpEntity = HttpEntity(requestBody, headers)
-
-                try {
-                        val response =
-                                restTemplate.postForObject(
-                                        uri,
-                                        httpEntity,
-                                        GeminiApiResponse::class.java
-                                )
-
-                        val responseJsonString =
-                                response?.candidates
-                                        ?.firstOrNull()
-                                        ?.content
-                                        ?.parts
-                                        ?.firstOrNull()
-                                        ?.text
-                                        ?: throw IOException(
-                                                "Failed to extract response text from Gemini API"
-                                        )
-
-                        val cleanedJson =
-                                responseJsonString
-                                        .trim()
-                                        .removeSurrounding("```json\n", "\n```")
-                                        .trim()
-
-                        logger.info("Received cleaned JSON from Gemini: $cleanedJson")
-
-                        if (responseType == String::class.java) {
-                                // If the expected response is a plain string, return it directly
-                                return cleanedJson as T
-                        }
-
-                        return objectMapper.readValue(cleanedJson, responseType)
-                } catch (e: HttpClientErrorException) {
-                        logger.error(
-                                "HTTP error calling Gemini API: ${e.statusCode} ${e.responseBodyAsString}",
-                                e
-                        )
-                } catch (e: Exception) {
-                        logger.error("Failed to process Gemini request: ${e.message}", e)
-                }
+            if (response == null) {
+                logger.error("Gemini API returned a null response object")
                 return null
+            }
+
+            val candidate = response.candidates?.firstOrNull()
+            if (candidate == null) {
+                val blockReason = response.promptFeedback?.blockReason
+                val safetyRatings =
+                    response.promptFeedback?.safetyRatings?.joinToString { "${it.category}: ${it.probability}" }
+                logger.error("Gemini API returned no candidates. Block Reason: $blockReason, Safety Ratings: $safetyRatings")
+                return null
+            }
+
+            if (candidate.finishReason != null && candidate.finishReason != "STOP") {
+                logger.warn("Gemini API candidate finish reason was not 'STOP': ${candidate.finishReason}. Safety ratings: ${candidate.safetyRatings?.joinToString { "${it.category}: ${it.probability}" }}")
+            }
+
+            val responseJsonString = candidate.content.parts.firstOrNull()?.text
+            if (responseJsonString == null) {
+                logger.error("Failed to extract response text from Gemini API candidate content")
+                return null
+            }
+
+            val cleanedJson =
+                responseJsonString
+                    .trim()
+                    .removeSurrounding("```json\n", "\n```")
+                    .removeSurrounding("```json", "```")
+                    .trim()
+
+            if (responseType == String::class.java) {
+                return cleanedJson as T
+            }
+
+            return try {
+                objectMapper.readValue(cleanedJson, responseType)
+            } catch (e: Exception) {
+                logger.error(
+                    "Failed to parse Gemini JSON response into ${responseType.simpleName}. Cleaned JSON: $cleanedJson",
+                    e
+                )
+                null
+            }
+        } catch (e: HttpClientErrorException) {
+            logger.error(
+                "HTTP error calling Gemini API: ${e.statusCode} ${e.responseBodyAsString}",
+                e
+            )
+        } catch (e: Exception) {
+            logger.error("Failed to process Gemini request: ${e.message}", e)
         }
+        return null
+    }
 }

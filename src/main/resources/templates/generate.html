@@ -32,7 +32,10 @@
             box-sizing: border-box;
         }
 
-        h1, h2, h3, h4 {
+        h1,
+        h2,
+        h3,
+        h4 {
             color: var(--primary-color);
             margin-top: 0;
         }
@@ -114,7 +117,10 @@
             font-size: 0.95rem;
         }
 
-        select, input[type="text"], input[type="number"], textarea {
+        select,
+        input[type="text"],
+        input[type="number"],
+        textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
@@ -126,7 +132,9 @@
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        select:focus, input:focus, textarea:focus {
+        select:focus,
+        input:focus,
+        textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px var(--focus-ring);
@@ -195,15 +203,36 @@
             letter-spacing: 0.5px;
         }
 
-        .party-labor { background-color: #e11f27; }
-        .party-liberal { background-color: #1c4f9c; }
-        .party-greens { background-color: #009c42; }
-        .party-national { background-color: #006944; }
-        .party-independent { background-color: #555; }
-        .party-onenation { background-color: #F36D24; }
-        .party-other { background-color: #888; }
+        .party-labor {
+            background-color: #e11f27;
+        }
 
-        button, .btn-phone {
+        .party-liberal {
+            background-color: #1c4f9c;
+        }
+
+        .party-greens {
+            background-color: #009c42;
+        }
+
+        .party-national {
+            background-color: #006944;
+        }
+
+        .party-independent {
+            background-color: #555;
+        }
+
+        .party-onenation {
+            background-color: #F36D24;
+        }
+
+        .party-other {
+            background-color: #888;
+        }
+
+        button,
+        .btn-phone {
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -221,19 +250,57 @@
             text-decoration: none;
         }
 
-        button:hover { background-color: var(--primary-hover); }
-        button:active { transform: scale(0.98); }
-        button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        button:hover {
+            background-color: var(--primary-hover);
+        }
 
-        .btn-full { width: 100%; font-size: 1.1rem; padding: 16px; margin-top: 20px; }
-        .btn-success { background-color: var(--success-color); }
-        .btn-success:hover { background-color: #059669; }
-        .btn-twitter { background-color: var(--twitter-color); }
-        .btn-twitter:hover { background-color: #0284c7; }
-        .btn-phone { background-color: var(--phone-color); }
-        .btn-phone:hover { background-color: #d97706; }
-        .btn-secondary { background-color: #64748b; }
-        .btn-secondary:hover { background-color: #475569; }
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .btn-full {
+            width: 100%;
+            font-size: 1.1rem;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn-twitter {
+            background-color: var(--twitter-color);
+        }
+
+        .btn-twitter:hover {
+            background-color: #0284c7;
+        }
+
+        .btn-phone {
+            background-color: var(--phone-color);
+        }
+
+        .btn-phone:hover {
+            background-color: #d97706;
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
 
         .action-group {
             display: flex;
@@ -260,7 +327,9 @@
             background: rgba(13, 71, 161, 0.1);
         }
 
-        .hidden { display: none !important; }
+        .hidden {
+            display: none !important;
+        }
 
         /* Results Output Areas */
         .output-box {
@@ -270,401 +339,569 @@
             font-size: 0.95rem;
         }
 
-        .output-email { background: #f8fafc; border: 1px solid #e2e8f0; font-family: monospace; white-space: pre-wrap; }
-        .output-tweet { background: #f0f9ff; border: 1px solid #bae6fd; font-style: italic; }
-        .output-phone { background: #fffbeb; border: 1px solid #fde68a; }
+        .output-email {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .output-tweet {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            font-style: italic;
+        }
+
+        .output-phone {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(8px);
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.95) translateY(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-body {
+            color: var(--text-main);
+            margin-bottom: 28px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-top: 20px;
+        }
 
         @media (max-width: 600px) {
-            .input-grid { grid-template-columns: 1fr; gap: 12px; }
-            .header-top { flex-direction: column; gap: 15px; text-align: center; }
-            button { width: 100%; }
-            .action-group { flex-direction: column; }
+            .input-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .action-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 
 <body>
-<div class="header-top">
-    <h1>RepWrite 🏛️</h1>
-    <a href="/about">About This App</a>
-</div>
-
-<!-- STEP 1: CAUSE -->
-<div class="card">
-    <h3 class="step-title"><span class="step-number">1</span> Select a Political Cause</h3>
-    <p class="helper-text">
-        Choose a cause you are passionate about. This provides the core context for our AI to generate a focused, relevant appeal.
-    </p>
-    <select id="causesDropdown">
-        <option value="">-- Loading Causes... --</option>
-    </select>
-    <div id="cause-content" class="cause-content"></div>
-</div>
-
-<!-- STEP 2: PERSONAL DETAILS -->
-<div id="personal-details-section" class="card hidden">
-    <h3 class="step-title"><span class="step-number">2</span> Your Details (Optional)</h3>
-    <p class="helper-text">
-        Providing these details helps craft an authentic appeal reflecting your unique voice. Set this once, and easily switch representatives below.
-    </p>
-    <div class="input-grid">
-        <div>
-            <label for="userName">Your Name</label>
-            <input type="text" id="userName" placeholder="e.g. Jane Doe">
-        </div>
-        <div>
-            <label for="userGender">Gender</label>
-            <select id="userGender">
-                <option value="">-- Select --</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Non-binary">Non-binary</option>
-                <option value="Prefer to self-describe">Prefer to self-describe</option>
-                <option value="Prefer not to say">Prefer not to say</option>
-            </select>
-        </div>
-        <div>
-            <label for="userAge">Age</label>
-            <input type="number" id="userAge" placeholder="e.g. 30">
-        </div>
-        <div>
-            <label for="userOccupation">Occupation</label>
-            <input type="text" id="userOccupation" placeholder="e.g. Teacher, Engineer">
-        </div>
-    </div>
-    <label for="importance">Why is this issue important to you?</label>
-    <textarea id="importance" rows="3" placeholder="Briefly share a personal connection or reason..."></textarea>
-</div>
-
-<!-- STEP 3: FIND REPRESENTATIVES -->
-<div id="politician-finder-search" class="card hidden">
-    <h3 class="step-title"><span class="step-number">3</span> Find Your Representative</h3>
-    <p class="helper-text">
-        Enter your postcode to find your representatives. Click on a representative to generate a customised appeal.
-    </p>
-    <div class="input-grid">
-        <div>
-            <label for="postcode">Postcode</label>
-            <input type="text" id="postcode" maxlength="4" placeholder="e.g. 2000">
-        </div>
+    <div class="header-top">
+        <h1>RepWrite 🏛️</h1>
+        <a href="/about">About This App</a>
     </div>
 
-    <!-- Politician Grid (Dynamic) -->
-    <div id="politician-container" class="hidden" style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-        <h4 id="politician-title" style="margin-bottom: 8px;">Select a Representative</h4>
-        <div id="politician-grid" class="politician-grid"></div>
-
-        <button id="submitEmail" class="btn-full hidden">✨ Generate Appeal</button>
-    </div>
-</div>
-
-<!-- STEP 4: RESULT -->
-<div id="email-result-section" class="card hidden" style="border-top: 6px solid var(--success-color);">
-    <h3 class="step-title" style="color: var(--success-color);"><span class="step-number" style="background: var(--success-color);">4</span> Your Generated Appeal</h3>
-
-    <p style="margin-bottom: 24px;">Review your generated messages below. You can always scroll up, select a different representative, and generate another unique message instantly.</p>
-
-    <!-- Email Output -->
-    <div style="margin-bottom: 30px;">
-        <h4 style="color: var(--primary-color);">✉️ Email to Representative</h4>
-        <p style="margin: 4px 0;">
-            <strong>To:</strong> <span id="emailTo"></span>
-            <button id="copyToBtn" class="copy-btn-inline">Copy</button>
+    <!-- STEP 1: CAUSE -->
+    <div class="card">
+        <h3 class="step-title"><span class="step-number">1</span> Select a Political Cause</h3>
+        <p class="helper-text">
+            Choose a cause you are passionate about. This provides the core context for our AI to generate a focused,
+            relevant appeal.
         </p>
-        <p style="margin: 4px 0 12px 0;">
-            <strong>Subject:</strong> <span id="emailSubject"></span>
-            <button id="copySubjectBtn" class="copy-btn-inline">Copy</button>
+        <select id="causesDropdown">
+            <option value="">-- Loading Causes... --</option>
+        </select>
+        <div id="cause-content" class="cause-content"></div>
+    </div>
+
+    <!-- STEP 2: PERSONAL DETAILS -->
+    <div id="personal-details-section" class="card hidden">
+        <h3 class="step-title"><span class="step-number">2</span> Your Details (Optional)</h3>
+        <p class="helper-text">
+            Providing these details helps craft an authentic appeal reflecting your unique voice. Set this once, and
+            easily switch representatives below.
         </p>
-        <div id="emailBody" class="output-box output-email"></div>
-        <div class="action-group">
-            <button id="sendEmailBtn" class="btn-success">Open in Mail App</button>
-            <button id="copyEmailBtn" class="btn-secondary">Copy Text</button>
+        <div class="input-grid">
+            <div>
+                <label for="userName">Your Name</label>
+                <input type="text" id="userName" placeholder="e.g. Jane Doe">
+            </div>
+            <div>
+                <label for="userGender">Gender</label>
+                <select id="userGender">
+                    <option value="">-- Select --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Non-binary">Non-binary</option>
+                    <option value="Prefer to self-describe">Prefer to self-describe</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+            </div>
+            <div>
+                <label for="userAge">Age</label>
+                <input type="number" id="userAge" placeholder="e.g. 30">
+            </div>
+            <div>
+                <label for="userOccupation">Occupation</label>
+                <input type="text" id="userOccupation" placeholder="e.g. Teacher, Engineer">
+            </div>
+        </div>
+        <label for="importance">Why is this issue important to you?</label>
+        <textarea id="importance" rows="3" placeholder="Briefly share a personal connection or reason..."></textarea>
+    </div>
+
+    <!-- STEP 3: FIND REPRESENTATIVES -->
+    <div id="politician-finder-search" class="card hidden">
+        <h3 class="step-title"><span class="step-number">3</span> Find Your Representative</h3>
+        <p class="helper-text">
+            Enter your postcode to find your representatives. Click on a representative to generate a customised appeal.
+        </p>
+        <div class="input-grid">
+            <div>
+                <label for="postcode">Postcode</label>
+                <input type="text" id="postcode" maxlength="4" placeholder="e.g. 2000">
+            </div>
+        </div>
+
+        <!-- Politician Grid (Dynamic) -->
+        <div id="politician-container" class="hidden"
+            style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            <h4 id="politician-title" style="margin-bottom: 8px;">Select a Representative</h4>
+            <div id="politician-grid" class="politician-grid"></div>
+
+            <button id="submitEmail" class="btn-full hidden">✨ Generate Appeal</button>
         </div>
     </div>
 
-    <!-- X / Twitter Output -->
-    <div style="margin-bottom: 30px;">
-        <h4 style="color: var(--twitter-color);">🐦 𝕏 (Twitter) Post</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Post this to raise public awareness and tag your representative.</p>
-        <div id="tweetContent" class="output-box output-tweet"></div>
-        <button id="copyTweetBtn" class="btn-twitter">Copy Tweet</button>
-    </div>
+    <!-- STEP 4: RESULT -->
+    <div id="email-result-section" class="card hidden" style="border-top: 6px solid var(--success-color);">
+        <h3 class="step-title" style="color: var(--success-color);"><span class="step-number"
+                style="background: var(--success-color);">4</span> Your Generated Appeal</h3>
 
-    <!-- Phone Script Output -->
-    <div>
-        <h4 style="color: var(--phone-color);">📞 Phone Script</h4>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Call their office and read this brief message to their staff.</p>
-        <div id="phoneLineContent" class="output-box output-phone"></div>
-        <div class="action-group">
-            <a id="callPoliticianBtn" href="#" class="btn-phone hidden">Call Representative</a>
-            <button id="copyPhoneBtn" class="btn-secondary">Copy Script</button>
+        <p style="margin-bottom: 24px;">Review your generated messages below. You can always scroll up, select a
+            different representative, and generate another unique message instantly.</p>
+
+        <!-- Email Output -->
+        <div style="margin-bottom: 30px;">
+            <h4 style="color: var(--primary-color);">✉️ Email to Representative</h4>
+            <p style="margin: 4px 0;">
+                <strong>To:</strong> <span id="emailTo"></span>
+                <button id="copyToBtn" class="copy-btn-inline">Copy</button>
+            </p>
+            <p style="margin: 4px 0 12px 0;">
+                <strong>Subject:</strong> <span id="emailSubject"></span>
+                <button id="copySubjectBtn" class="copy-btn-inline">Copy</button>
+            </p>
+            <div id="emailBody" class="output-box output-email"></div>
+            <div class="action-group">
+                <button id="sendEmailBtn" class="btn-success">Open in Mail App</button>
+                <button id="copyEmailBtn" class="btn-secondary">Copy Text</button>
+            </div>
+        </div>
+
+        <!-- X / Twitter Output -->
+        <div style="margin-bottom: 30px;">
+            <h4 style="color: var(--twitter-color);">🐦 𝕏 (Twitter) Post</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Post this to raise public
+                awareness and tag your representative.</p>
+            <div id="tweetContent" class="output-box output-tweet"></div>
+            <button id="copyTweetBtn" class="btn-twitter">Copy Tweet</button>
+        </div>
+
+        <!-- Phone Script Output -->
+        <div>
+            <h4 style="color: var(--phone-color);">📞 Phone Script</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Call their office and read this
+                brief message to their staff.</p>
+            <div id="phoneLineContent" class="output-box output-phone"></div>
+            <div class="action-group">
+                <a id="callPoliticianBtn" href="#" class="btn-phone hidden">Call Representative</a>
+                <button id="copyPhoneBtn" class="btn-secondary">Copy Script</button>
+            </div>
         </div>
     </div>
-</div>
+    
+    <!-- Modal for Email Instructions -->
+    <div id="emailHelpModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span style="font-size: 1.8rem;">✉️</span>
+                <h3 class="modal-title">Sending Your Email</h3>
+            </div>
+            <div class="modal-body">
+                <p>We're about to open your computer's <strong>personal email app</strong> (like Outlook, Apple Mail, or
+                    Gmail) so you can send this message directly.</p>
 
-<div style="text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid var(--border-color); color: var(--text-muted);">
-    <p>Support this <a href="https://github.com/MannanM/RepWrite" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">open source</a> project:</p>
-    <a href="https://buymeacoffee.com/mannanm" target="_blank" style="display: inline-block; transition: transform 0.2s;">
-        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=mannanm&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a Beer" style="height: 40px;">
-    </a>
-</div>
+                <div class="info-box">
+                    <strong>Notice:</strong> This email will be sent from your own account, ensuring it has the most
+                    impact with your representative.
+                </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const causesDropdown = document.getElementById('causesDropdown');
-        const causeContent = document.getElementById('cause-content');
+                <p style="margin-top: 24px; font-size: 0.95rem; color: var(--text-muted);">
+                    <strong>No app opening?</strong> If nothing happens, your computer might not have a default mail
+                    client configured. In that case, simply <strong>copy and paste</strong> the details from the previous
+                    page manually.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModalBtn" class="btn-secondary">Close</button>
+                <button id="triggerMailtoBtn" class="btn-success">Open Mail App</button>
+            </div>
+        </div>
+    </div>
 
-        const personalDetailsSection = document.getElementById('personal-details-section');
-        const politicianSearch = document.getElementById('politician-finder-search');
-        const postcodeField = document.getElementById('postcode');
+    <div
+        style="text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid var(--border-color); color: var(--text-muted);">
+        <p>Support this <a href="https://github.com/MannanM/RepWrite" target="_blank"
+                style="color: var(--primary-color); text-decoration: none; font-weight: bold;">open source</a> project:
+        </p>
+        <a href="https://buymeacoffee.com/mannanm" target="_blank"
+            style="display: inline-block; transition: transform 0.2s;">
+            <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍺&slug=mannanm&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff"
+                alt="Buy me a Beer" style="height: 40px;">
+        </a>
+    </div>
 
-        const politicianContainer = document.getElementById('politician-container');
-        const politicianGrid = document.getElementById('politician-grid');
-        const politicianTitle = document.getElementById('politician-title');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const causesDropdown = document.getElementById('causesDropdown');
+            const causeContent = document.getElementById('cause-content');
 
-        const submitEmailBtn = document.getElementById('submitEmail');
-        const emailResultSection = document.getElementById('email-result-section');
+            const personalDetailsSection = document.getElementById('personal-details-section');
+            const politicianSearch = document.getElementById('politician-finder-search');
+            const postcodeField = document.getElementById('postcode');
 
-        const emailTo = document.getElementById('emailTo');
-        const emailSubject = document.getElementById('emailSubject');
-        const emailBody = document.getElementById('emailBody');
-        const tweetContent = document.getElementById('tweetContent');
-        const phoneLineContent = document.getElementById('phoneLineContent');
-        const callPoliticianBtn = document.getElementById('callPoliticianBtn');
+            const politicianContainer = document.getElementById('politician-container');
+            const politicianGrid = document.getElementById('politician-grid');
+            const politicianTitle = document.getElementById('politician-title');
 
-        let selectedPoliticianId = null;
-        let currentEmail = null;
+            const submitEmailBtn = document.getElementById('submitEmail');
+            const emailResultSection = document.getElementById('email-result-section');
 
-        async function loadCauses() {
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const res = await fetch(`/api/causes?status=active&_date=${today}`);
-                if (res.ok) {
-                    const causes = await res.json();
-                    causesDropdown.innerHTML = '<option value="">-- Select a Political Cause --</option>';
-                    causes.forEach(cause => {
-                        const opt = document.createElement('option');
-                        opt.value = cause.id;
-                        opt.textContent = cause.name;
-                        causesDropdown.appendChild(opt);
-                    });
+            const emailTo = document.getElementById('emailTo');
+            const emailSubject = document.getElementById('emailSubject');
+            const emailBody = document.getElementById('emailBody');
+            const tweetContent = document.getElementById('tweetContent');
+            const phoneLineContent = document.getElementById('phoneLineContent');
+            const callPoliticianBtn = document.getElementById('callPoliticianBtn');
+
+            let selectedPoliticianId = null;
+            let currentEmail = null;
+
+            async function loadCauses() {
+                try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const res = await fetch(`/api/causes?status=active&_date=${today}`);
+                    if (res.ok) {
+                        const causes = await res.json();
+                        causesDropdown.innerHTML = '<option value="">-- Select a Political Cause --</option>';
+                        causes.forEach(cause => {
+                            const opt = document.createElement('option');
+                            opt.value = cause.id;
+                            opt.textContent = cause.name;
+                            causesDropdown.appendChild(opt);
+                        });
+                    }
+                } catch (err) {
+                    console.error('Failed to load causes', err);
+                    causesDropdown.innerHTML = '<option value="">Error loading causes</option>';
                 }
-            } catch (err) {
-                console.error('Failed to load causes', err);
-                causesDropdown.innerHTML = '<option value="">Error loading causes</option>';
-            }
-        }
-
-        causesDropdown.addEventListener('change', async (e) => {
-            const causeId = e.target.value;
-            if (!causeId) {
-                causeContent.style.display = 'none';
-                personalDetailsSection.classList.add('hidden');
-                politicianSearch.classList.add('hidden');
-                emailResultSection.classList.add('hidden');
-                return;
             }
 
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const res = await fetch(`/api/causes/${causeId}?_date=${today}`);
-                if (res.ok) {
-                    const cause = await res.json();
-                    causeContent.textContent = cause.content;
-                    causeContent.style.display = 'block';
-
-                    // Unhide subsequent steps
-                    personalDetailsSection.classList.remove('hidden');
-                    politicianSearch.classList.remove('hidden');
-
-                    // Scroll nicely to details
-                    setTimeout(() => {
-                        personalDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 100);
+            causesDropdown.addEventListener('change', async (e) => {
+                const causeId = e.target.value;
+                if (!causeId) {
+                    causeContent.style.display = 'none';
+                    personalDetailsSection.classList.add('hidden');
+                    politicianSearch.classList.add('hidden');
+                    emailResultSection.classList.add('hidden');
+                    return;
                 }
-            } catch (err) {
-                console.error('Failed to load cause detail', err);
-            }
-        });
+
+                try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const res = await fetch(`/api/causes/${causeId}?_date=${today}`);
+                    if (res.ok) {
+                        const cause = await res.json();
+                        causeContent.textContent = cause.content;
+                        causeContent.style.display = 'block';
+
+                        // Unhide subsequent steps
+                        personalDetailsSection.classList.remove('hidden');
+                        politicianSearch.classList.remove('hidden');
+
+                        // Scroll nicely to details
+                        setTimeout(() => {
+                            personalDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    }
+                } catch (err) {
+                    console.error('Failed to load cause detail', err);
+                }
+            });
 
 
 
-        function updatePoliticians(data, electorateName) {
-            politicianGrid.innerHTML = '';
-            submitEmailBtn.classList.add('hidden');
-            selectedPoliticianId = null;
+            function updatePoliticians(data, electorateName) {
+                politicianGrid.innerHTML = '';
+                submitEmailBtn.classList.add('hidden');
+                selectedPoliticianId = null;
 
-            if (data.length > 0) {
-                politicianContainer.classList.remove('hidden');
-                politicianTitle.textContent = electorateName ? `Representatives for ${electorateName}` : 'Select a Representative';
-            } else {
-                politicianContainer.classList.add('hidden');
-                return;
-            }
+                if (data.length > 0) {
+                    politicianContainer.classList.remove('hidden');
+                    politicianTitle.textContent = electorateName ? `Representatives for ${electorateName}` : 'Select a Representative';
+                } else {
+                    politicianContainer.classList.add('hidden');
+                    return;
+                }
 
-            data.forEach(p => {
-                const partyClass = (p.party || '').toLowerCase();
-                let badgeClass = 'party-other';
-                if (partyClass.includes('labor')) badgeClass = 'party-labor';
-                else if (partyClass.includes('liberal')) badgeClass = 'party-liberal';
-                else if (partyClass.includes('greens')) badgeClass = 'party-greens';
-                else if (partyClass.includes('national')) badgeClass = 'party-national';
-                else if (partyClass.includes('independent')) badgeClass = 'party-independent';
-                else if (partyClass.includes('one nation')) badgeClass = 'party-onenation';
+                data.forEach(p => {
+                    const partyClass = (p.party || '').toLowerCase();
+                    let badgeClass = 'party-other';
+                    if (partyClass.includes('labor')) badgeClass = 'party-labor';
+                    else if (partyClass.includes('liberal')) badgeClass = 'party-liberal';
+                    else if (partyClass.includes('greens')) badgeClass = 'party-greens';
+                    else if (partyClass.includes('national')) badgeClass = 'party-national';
+                    else if (partyClass.includes('independent')) badgeClass = 'party-independent';
+                    else if (partyClass.includes('one nation')) badgeClass = 'party-onenation';
 
-                const card = document.createElement('div');
-                card.className = 'politician-card-item';
-                card.innerHTML = `
+                    const card = document.createElement('div');
+                    card.className = 'politician-card-item';
+                    card.innerHTML = `
                     <div class="politician-name">${p.name}</div>
                     <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;">${p.type || ''} - ${p.electorate || ''}</div>
                     <span class="party-badge ${badgeClass}">${p.party}</span>
                 `;
 
-                card.addEventListener('click', () => {
-                    // Deselect others
-                    document.querySelectorAll('.politician-card-item').forEach(c => c.classList.remove('selected'));
-                    // Select this
-                    card.classList.add('selected');
-                    selectedPoliticianId = p.id;
+                    card.addEventListener('click', () => {
+                        // Deselect others
+                        document.querySelectorAll('.politician-card-item').forEach(c => c.classList.remove('selected'));
+                        // Select this
+                        card.classList.add('selected');
+                        selectedPoliticianId = p.id;
 
-                    // Show and enable generate button
-                    submitEmailBtn.classList.remove('hidden');
+                        // Show and enable generate button
+                        submitEmailBtn.classList.remove('hidden');
+                    });
+
+                    politicianGrid.appendChild(card);
                 });
-
-                politicianGrid.appendChild(card);
-            });
-        }
-
-        async function fetchByPostcode(postcode) {
-            if (postcode.length !== 4) {
-                politicianContainer.classList.add('hidden');
-                return;
             }
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const res = await fetch(`/api/postcodes/${postcode}/politicians?_date=${today}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.length > 0) {
-                        updatePoliticians(data, data[0].electorate);
-                    } else {
-                        updatePoliticians(data, "");
-                    }
+
+            async function fetchByPostcode(postcode) {
+                if (postcode.length !== 4) {
+                    politicianContainer.classList.add('hidden');
+                    return;
                 }
-            } catch (err) {
-                console.error("Error fetching postcode", err);
-            }
-        }
-
-        postcodeField.addEventListener('input', (e) => {
-            if(e.target.value.length === 4) {
-                fetchByPostcode(e.target.value);
-            } else {
-                politicianContainer.classList.add('hidden');
-            }
-        });
-
-        submitEmailBtn.addEventListener('click', async () => {
-            if (!selectedPoliticianId) return;
-
-            const causeId = causesDropdown.value;
-            const requestData = {
-                causeId: causeId,
-                politicianId: selectedPoliticianId,
-                name: document.getElementById('userName').value || null,
-                gender: document.getElementById('userGender').value || null,
-                age: parseInt(document.getElementById('userAge').value) || null,
-                occupation: document.getElementById('userOccupation').value || null,
-                importance: document.getElementById('importance').value || null
-            };
-
-            const originalText = submitEmailBtn.innerHTML;
-            submitEmailBtn.innerHTML = '⏳ Generating Appeal...';
-            submitEmailBtn.disabled = true;
-
-            // Hide existing results during generation
-            emailResultSection.classList.add('hidden');
-
-            try {
-                const res = await fetch(`/api/causes/${causeId}/generate-email`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestData)
-                });
-
-                if (res.ok) {
-                    currentEmail = await res.json();
-                    emailTo.textContent = currentEmail.toAddress;
-                    emailSubject.textContent = currentEmail.subject;
-                    emailBody.textContent = currentEmail.body;
-                    tweetContent.textContent = currentEmail.tweet || 'No tweet generated.';
-                    phoneLineContent.textContent = currentEmail.phoneLine || 'No phone script generated.';
-
-                    if (currentEmail.phoneNumber && currentEmail.phoneNumber.trim() !== "") {
-                        callPoliticianBtn.href = `tel:${currentEmail.phoneNumber}`;
-                        callPoliticianBtn.classList.remove('hidden');
-                    } else {
-                        callPoliticianBtn.classList.add('hidden');
+                try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const res = await fetch(`/api/postcodes/${postcode}/politicians?_date=${today}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.length > 0) {
+                            updatePoliticians(data, data[0].electorate);
+                        } else {
+                            updatePoliticians(data, "");
+                        }
                     }
+                } catch (err) {
+                    console.error("Error fetching postcode", err);
+                }
+            }
 
-                    emailResultSection.classList.remove('hidden');
-                    setTimeout(() => {
-                        emailResultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 100);
+            postcodeField.addEventListener('input', (e) => {
+                if (e.target.value.length === 4) {
+                    fetchByPostcode(e.target.value);
                 } else {
-                    throw new Error('Server returned an error.');
+                    politicianContainer.classList.add('hidden');
                 }
-            } catch (err) {
-                console.error('Failed to generate email', err);
-                alert('Error generating email. Please try again.');
-            } finally {
-                submitEmailBtn.innerHTML = originalText;
-                submitEmailBtn.disabled = false;
-            }
-        });
-
-        // Copy/Send Utilities
-        function copyText(elementId, btnElement, defaultText) {
-            const text = document.getElementById(elementId).innerText || document.getElementById(elementId).textContent;
-            if (!text) return;
-            navigator.clipboard.writeText(text).then(() => {
-                btnElement.textContent = 'Copied! ✓';
-                setTimeout(() => btnElement.textContent = defaultText, 2000);
             });
-        }
 
-        document.getElementById('sendEmailBtn').addEventListener('click', () => {
-            if (!currentEmail) return;
-            const to = currentEmail.toAddress;
-            const subject = encodeURIComponent(currentEmail.subject);
-            const body = encodeURIComponent(currentEmail.body);
-            window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+            submitEmailBtn.addEventListener('click', async () => {
+                if (!selectedPoliticianId) return;
+
+                const causeId = causesDropdown.value;
+                const requestData = {
+                    causeId: causeId,
+                    politicianId: selectedPoliticianId,
+                    name: document.getElementById('userName').value || null,
+                    gender: document.getElementById('userGender').value || null,
+                    age: parseInt(document.getElementById('userAge').value) || null,
+                    occupation: document.getElementById('userOccupation').value || null,
+                    importance: document.getElementById('importance').value || null
+                };
+
+                const originalText = submitEmailBtn.innerHTML;
+                submitEmailBtn.innerHTML = '⏳ Generating Appeal...';
+                submitEmailBtn.disabled = true;
+
+                // Hide existing results during generation
+                emailResultSection.classList.add('hidden');
+
+                try {
+                    const res = await fetch(`/api/causes/${causeId}/generate-email`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    if (res.ok) {
+                        currentEmail = await res.json();
+                        emailTo.textContent = currentEmail.toAddress;
+                        emailSubject.textContent = currentEmail.subject;
+                        emailBody.textContent = currentEmail.body;
+                        tweetContent.textContent = currentEmail.tweet || 'No tweet generated.';
+                        phoneLineContent.textContent = currentEmail.phoneLine || 'No phone script generated.';
+
+                        if (currentEmail.phoneNumber && currentEmail.phoneNumber.trim() !== "") {
+                            callPoliticianBtn.href = `tel:${currentEmail.phoneNumber}`;
+                            callPoliticianBtn.classList.remove('hidden');
+                        } else {
+                            callPoliticianBtn.classList.add('hidden');
+                        }
+
+                        emailResultSection.classList.remove('hidden');
+                        setTimeout(() => {
+                            emailResultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    } else {
+                        throw new Error('Server returned an error.');
+                    }
+                } catch (err) {
+                    console.error('Failed to generate email', err);
+                    alert('Error generating email. Please try again.');
+                } finally {
+                    submitEmailBtn.innerHTML = originalText;
+                    submitEmailBtn.disabled = false;
+                }
+            });
+
+            // Copy/Send Utilities
+            function copyText(elementId, btnElement, defaultText) {
+                const text = document.getElementById(elementId).innerText || document.getElementById(elementId).textContent;
+                if (!text) return;
+                navigator.clipboard.writeText(text).then(() => {
+                    btnElement.textContent = 'Copied! ✓';
+                    setTimeout(() => btnElement.textContent = defaultText, 2000);
+                });
+            }
+
+            const emailHelpModal = document.getElementById('emailHelpModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const triggerMailtoBtn = document.getElementById('triggerMailtoBtn');
+
+            function openMailApp() {
+                if (!currentEmail) return;
+                const to = currentEmail.toAddress;
+                const subject = encodeURIComponent(currentEmail.subject);
+                const body = encodeURIComponent(currentEmail.body);
+                window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+            }
+
+            document.getElementById('sendEmailBtn').addEventListener('click', () => {
+                emailHelpModal.classList.add('active');
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                emailHelpModal.classList.remove('active');
+            });
+
+            triggerMailtoBtn.addEventListener('click', () => {
+                openMailApp();
+                emailHelpModal.classList.remove('active');
+            });
+
+            // Close modal on click outside
+            emailHelpModal.addEventListener('click', (e) => {
+                if (e.target === emailHelpModal) {
+                    emailHelpModal.classList.remove('active');
+                }
+            });
+
+            document.getElementById('copyEmailBtn').addEventListener('click', (e) => {
+                copyText('emailBody', e.target, 'Copy Text');
+            });
+
+            document.getElementById('copyTweetBtn').addEventListener('click', (e) => {
+                copyText('tweetContent', e.target, 'Copy Tweet');
+            });
+
+            document.getElementById('copyPhoneBtn').addEventListener('click', (e) => {
+                copyText('phoneLineContent', e.target, 'Copy Script');
+            });
+
+            document.getElementById('copyToBtn').addEventListener('click', (e) => {
+                copyText('emailTo', e.target, 'Copy');
+            });
+
+            document.getElementById('copySubjectBtn').addEventListener('click', (e) => {
+                copyText('emailSubject', e.target, 'Copy');
+            });
+
+            // Init
+            loadCauses();
         });
-
-        document.getElementById('copyEmailBtn').addEventListener('click', (e) => {
-            copyText('emailBody', e.target, 'Copy Text');
-        });
-
-        document.getElementById('copyTweetBtn').addEventListener('click', (e) => {
-            copyText('tweetContent', e.target, 'Copy Tweet');
-        });
-
-        document.getElementById('copyPhoneBtn').addEventListener('click', (e) => {
-            copyText('phoneLineContent', e.target, 'Copy Script');
-        });
-
-        document.getElementById('copyToBtn').addEventListener('click', (e) => {
-            copyText('emailTo', e.target, 'Copy');
-        });
-
-        document.getElementById('copySubjectBtn').addEventListener('click', (e) => {
-            copyText('emailSubject', e.target, 'Copy');
-        });
-
-        // Init
-        loadCauses();
-    });
-</script>
+    </script>
 </body>
 
 </html>
