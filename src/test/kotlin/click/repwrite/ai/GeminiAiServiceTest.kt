@@ -91,14 +91,14 @@ class GeminiAiServiceTest {
 
         every {
             restTemplateBuilder.build()
-                    .postForObject(any<String>(), any(), GeminiApiResponse::class.java)
+                .postForObject(any<String>(), any(), GeminiApiResponse::class.java)
         } returns mockResponse
         every { mockResponse.candidates } returns listOf(mockCandidate)
         every { mockCandidate.content } returns mockContent
+        every { mockCandidate.finishReason } returns "STOP"
+        every { mockCandidate.safetyRatings } returns emptyList()
         every { mockContent.parts } returns listOf(mockPart)
         every { mockPart.text } returns "```json\nThis is a summary.\n```"
-        every { objectMapper.readValue("This is a summary.", String::class.java) } returns
-                "This is a summary."
 
         val summary = service.summarizePoliticianBackground(wikiContent, senator)
 
